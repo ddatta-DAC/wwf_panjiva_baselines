@@ -1,0 +1,11 @@
+.ipynb_checkpoints
+__pycache__/
+*.py[cod]
+bin/
+dist/
+lib/
+lib64/
+var/
+Data/data_3/ape_v1_train_data*.pkl
+Data/data_2/ape_v1_train_data*.pkl
+
