@@ -1,0 +1,6 @@
+'DATA_DIR': '../../Data'
+'_DIR' : 'data_3'
+'OP_DIR' : 'output'
+'SAVE_DIR' : 'save_dir'
+'MODEL_NAME' : 'my_model_v_1_1'
+'saved_model_file' : 'frozen_model_5_v18_16_1557696012.pb'
