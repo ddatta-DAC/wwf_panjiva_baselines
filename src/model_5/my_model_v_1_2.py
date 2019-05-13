@@ -20,6 +20,9 @@ from collections import OrderedDict
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from mpl_toolkits.mplot3d import Axes3D
+from scipy.linalg import svd
+from sklearn.decomposition import TruncatedSVD
+from sklearn.utils.extmath import randomized_svd
 import yaml
 from sklearn.metrics import auc
 
@@ -735,10 +738,6 @@ class model:
             res = np.array(output)
 
         # remove the 1st singular vector
-        from scipy.linalg import svd
-        from sklearn.decomposition import TruncatedSVD
-        from sklearn.utils.extmath import randomized_svd
-
 
         A = np.transpose(res)
         U, S, Vt = randomized_svd(A, n_components=1)
