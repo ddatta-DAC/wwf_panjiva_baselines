@@ -76,7 +76,7 @@ def create_args():
     )
     tf.app.flags.DEFINE_string(
         'op_dims',
-        '8,4',
+        '8,5',
         'size of embedding'
     )
 
@@ -94,7 +94,7 @@ def create_args():
 
     tf.app.flags.DEFINE_boolean(
         'use_pretrained',
-        False,
+        True,
         "To train a new model or use pre trained model"
     )
 
@@ -228,7 +228,7 @@ class model:
         self.model_signature = MODEL_NAME + '_'.join([str(e) for e in emb_dims])
         self.use_activation = use_acivation
         self.use_bias = use_bias
-        self.alpha = 0.1
+        self.alpha = 0.00125
         return
 
     def set_model_options(
@@ -942,6 +942,7 @@ def main(argv=None):
     plt.figure(figsize=[14, 8])
     j = 1
     res_str = 'auPR : '
+    auc_avg = 0
     for _x,_y in zip(test_result_r,test_result_p):
         plt.plot(
             _x,
@@ -953,6 +954,11 @@ def main(argv=None):
         _auc = auc(_x, _y)
         res_str += ' ' + "{0:.2f}".format(_auc)
         print(_auc)
+        auc_avg += _auc
+
+    auc_avg = auc_avg/len(test_result_r)
+    res_str += '| Avg ' + str(auc_avg)
+    print('Average ',auc_avg)
 
     plt.xlabel('Recall', fontsize=15)
     plt.ylabel('Precision', fontsize=15)

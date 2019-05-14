@@ -1,5 +1,5 @@
 'DATA_DIR': '../../Data'
-'_DIR' : 'data_3'
+'_DIR' : 'data_1'
 'OP_DIR' : 'output'
 'SAVE_DIR' : 'save_dir'
-'REFRESH_DATA' : False
+'REFRESH_DATA' : True

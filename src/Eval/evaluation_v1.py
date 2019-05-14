@@ -30,7 +30,7 @@ def precision_recall_curve(
     for t in np.arange(0.25, 100 + 0.125, 0.125):
         _k = int((t/100)*total_count)
         _numerator = len(set(input_ids[:_k]).intersection(anomaly_id_list))
-        print(_numerator, _k ,num_anomalies)
+        # print(_numerator, _k ,num_anomalies)
         p = _numerator/_k
         r = _numerator/num_anomalies
         precision_vals.append(p)

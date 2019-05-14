@@ -1,0 +1,33 @@
+'DATA_DIR': '../../Data'
+'_DIR' : 'data_2'
+'OP_DIR' : 'output'
+'SAVE_DIR' : 'save_dir'
+'MODEL_NAME' : 'my_model_v_1_2'
+'data_1':
+  'learning_rate' : 0.00025
+  'use_pretrained' : False
+  'show_loss_figure' : False
+  'save_loss_figure' : False
+  'use_bias' : True
+  'saved_model_file' : None
+  'num_epochs' : 100
+  'op_dims' : 8,6
+  'batchsize': 256
+  'alpha' : 0.0025
+  'lof_K' : 18
+'data_2':
+  'learning_rate' : 0.00025
+  'use_pretrained' : False
+  'show_loss_figure' : False
+  'save_loss_figure' : False
+  'use_bias' : True
+  'saved_model_file' : None
+  'num_epochs' : 110
+  'op_dims' : 8,10
+  'batchsize': 256
+  'alpha' : 0.0025
+  'lof_K' : 20
+
+# Best case :
+# connect 4 : lof k =18 , alpha 0.0025 emb : 6
+# covertype : lof k =20 , alpha 0.0025 emb : 10

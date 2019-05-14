@@ -41,12 +41,14 @@ print(cur_path)
 # print(OP_DIR)
 KNN_K = 20
 DISPLAY_ENSEMBLE_FIG = False
-
+USE_MAX = True
 
 # ------------------------------------ #
 
 def find_subspace_anomalies(x_id, x_emb, dim_count, show_figs=False) :
     global KNN_K
+    global USE_MAX
+
     time_1 = time.time()
     _count = np.random.randint(
         int(dim_count / 2),
@@ -150,15 +152,24 @@ def anomaly_1( id_list, embed_list ):
 
     # LOF scores are normalized , so simply add them up
     all_keys = list(x_id)
-    print(len(all_keys))
+    # print(len(all_keys))
     num_subsp = len(all_candidates)
     score_dict = {}
 
-    for k in all_keys:
-        s = 0
-        for _r in all_candidates:
-            s += _r[k]
-        score_dict[k] = s/num_subsp
+    if USE_MAX is False:
+        for k in all_keys:
+            s = 0
+            for _r in all_candidates:
+                s += _r[k]
+            score_dict[k] = s/num_subsp
+
+
+    if USE_MAX is True:
+        for k in all_keys:
+            s = []
+            for _r in all_candidates:
+                s.append(_r[k])
+            score_dict[k] = np.min(s)
 
     if DISPLAY_ENSEMBLE_FIG:
         sorted_x = sorted(score_dict.items(), key=operator.itemgetter(1),reverse=True)
@@ -174,7 +185,7 @@ def anomaly_1( id_list, embed_list ):
     # cut_off = np.percentile(list(score_dict.values()), 0.10)
     # print('Cut Off score :', cut_off)
     sorted_x = sorted(score_dict.items(), key=operator.itemgetter(1))
-    print(len(sorted_x))
+    # print(len(sorted_x))
 
     id_list = [_[0] for _ in sorted_x]
     scores = [_[1] for _ in sorted_x]

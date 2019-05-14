@@ -64,7 +64,7 @@ def create_args():
     )
     tf.app.flags.DEFINE_integer(
         'op_dim',
-        8,
+        6,
         'size of embedding'
     )
 
