@@ -1,6 +1,11 @@
 'DATA_DIR': '../../Data'
-'_DIR' : 'data_3'
+'_DIR' : 'data_2'
 'OP_DIR' : 'output'
 'SAVE_DIR' : 'save_dir'
-'MODEL_NAME' : 'my_model_v_1_1'
-'saved_model_file' : 'frozen_model_5_v18_16_1557696012.pb'
+'MODEL_NAME' : 'my_model_v_1_2'
+'saved_model_file' : 'frozen_model_5_v18_10_1557781705.pb'
+
+
+# Best case :
+# connect 4 : lof k =18 , alpha 0.0025 emb : 6
+# covertype : lof k =20 , alpha 0.0025 emb : 10

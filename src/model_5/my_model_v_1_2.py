@@ -79,7 +79,7 @@ def create_args():
     )
     tf.app.flags.DEFINE_string(
         'op_dims',
-        '8,12',
+        '8,10',
         'size of embedding'
     )
 
@@ -97,7 +97,7 @@ def create_args():
 
     tf.app.flags.DEFINE_boolean(
         'use_pretrained',
-        False,
+        True,
         "To train a new model or use pre trained model"
     )
 
@@ -139,11 +139,6 @@ def create_args():
 
     tf.app.flags.DEFINE_boolean(
         'use_bias',
-        True,
-        'use bias'
-    )
-    tf.app.flags.DEFINE_boolean(
-        'use_drop_out',
         True,
         'use bias'
     )
@@ -231,7 +226,7 @@ class model:
         self.model_signature = MODEL_NAME + '_'.join([str(e) for e in emb_dims])
         self.use_activation = use_acivation
         self.use_bias = use_bias
-        self.alpha = 0.1
+        self.alpha = 0.0025
         return
 
     def set_model_options(
@@ -429,6 +424,7 @@ class model:
                         _wx_b = tf.add(_wx, self.b[l][d])
                     else:
                         _wx_b = _wx
+
                     prev = _wx_b
                 x_pos_WXb[d] = prev
                 print(x_pos_WXb[d].shape)
@@ -454,26 +450,42 @@ class model:
                         name='entity_prob_x'
                     )
 
-                _ep_x = tf.divide(self.entity_prob_x, self.alpha)
-                _ep_x = tf.add( _ep_x , 1)
-                _ep_x = tf.pow(_ep_x, -1)
-                self.ep_x = _ep_x
+                    self.domain_alpha = tf.placeholder(
+                        tf.float32,
+                        [self.num_domains],
+                        name='domain_alpha'
+                    )
 
-                # emb_op_pos : shape [ batch, domains, emd_dim]
-                # entity_prob_x : shape [batch, dommains]
-                ep_x = tf.reshape(self.ep_x,
-                                  [-1,self.ep_x.shape[-1],1])
-                ep_x = tf.tile(ep_x, [1, 1, self.emb_dims[-1]])
-                print('ep_x shape' , ep_x.shape)
+                    _ep_x = tf.divide(self.entity_prob_x,  self.alpha)
+                    _ep_x = tf.add( _ep_x , 1)
+                    _ep_x = tf.pow(_ep_x, -1)
 
-                # apply  weight : element wise multiply
-                w_joint_emb = tf.math.multiply(self.joint_emb_op,ep_x)
+                    # _ep_x = tf.add(-self.entity_prob_x, 1)
 
-                self.w_mean_emb_op = tf.reduce_mean(
-                    w_joint_emb,
-                    axis=1,
-                    keepdims=False
-                )
+                    self.ep_x = _ep_x
+
+                    # emb_op_pos : shape [ batch, domains, emd_dim]
+                    # entity_prob_x : shape [batch, domains]
+                    ep_x = tf.reshape(
+                        self.ep_x,
+                        [-1,self.ep_x.shape[-1],1]
+                    )
+                    print('ep_x shape', ep_x.shape)
+                    ep_x = tf.tile(
+                        ep_x,
+                        [1, 1, self.emb_dims[-1]]
+                    )
+                    print('ep_x shape', ep_x.shape)
+
+                    # --------------------------- #
+                    # apply  weight : element wise multiply
+                    w_joint_emb = tf.math.multiply(self.joint_emb_op,ep_x)
+
+                    self.w_mean_emb_op = tf.reduce_mean(
+                        w_joint_emb,
+                        axis=1,
+                        keepdims=False
+                    )
 
 
             if self.inference:
@@ -713,7 +725,7 @@ class model:
 
         return res
 
-    def get_w_embedding_mean(self, x, ep):
+    def get_w_embedding_mean(self, x, ep , domain_alpha):
         self.set_w_mean = True
         self.restore_model()
         output = []
@@ -731,7 +743,8 @@ class model:
                     self.w_mean_emb_op,
                     feed_dict={
                         self.x_pos_inp: _x,
-                        self.entity_prob_x: _ep
+                        self.entity_prob_x: _ep,
+                        self.domain_alpha: domain_alpha
                     }
                 )
                 output.extend(_output)
@@ -839,6 +852,50 @@ def get_data():
 
     return DATA_X, test_anom_id, test_all_id, test_x , train_ids, entity_prob_train_x, entity_prob_test
 
+def domain_apha_aux():
+    global _DIR
+    global DATA_DIR
+
+    _data_file = os.path.join(DATA_DIR, 'train_x.pkl')
+    with open(_data_file, 'rb') as fh:
+        x = pickle.load(fh)
+
+    _test_files = os.path.join(
+        DATA_DIR,
+        'test_x_*.pkl'
+    )
+    print(_test_files)
+    test_files = glob.glob(_test_files)
+
+    for t in test_files:
+        with open(t, 'rb') as fh:
+            data = pickle.load(fh)
+            _test_x = data[2]
+            x = np.vstack([x, _test_x])
+    print(x.shape)
+    return x
+
+def get_domain_alpha():
+    global _DIR
+    global DATA_DIR
+
+    _data = domain_apha_aux()
+    domain_dims = get_domain_dims()
+    num_domains = len(domain_dims)
+    domain_alpha = []
+    for i in range(num_domains):
+        tmp = _data[:, i]
+        df = pd.Series(tmp).value_counts()
+        df.sort_index(inplace=True)
+        vals = list(df.sort_values().values)
+        from scipy.stats import iqr
+
+        _alpha = (np.max(vals)*np.min(vals))/(1+np.min(vals))
+
+        _alpha = np.median(vals)
+        domain_alpha.append(_alpha)
+    return domain_alpha
+
 
 def main(argv=None):
     global embedding_dims
@@ -893,24 +950,22 @@ def main(argv=None):
     test_result_r = []
     test_result_p = []
 
+    domain_alpha = get_domain_alpha()
     for i in range(len(test_x)):
 
         # combine the test and train data - since it is a density based method
         _x = np.vstack([data_x, test_x[i]])
         _ep = np.vstack([entity_prob_train_x, entity_prob_test[i]])
 
-        mean_embeddings = model_obj.get_w_embedding_mean(_x,_ep)
+
+        mean_embeddings = model_obj.get_w_embedding_mean(_x,_ep, domain_alpha)
         print(data_x.shape[0], test_x[i].shape[0], _x.shape[0] ,mean_embeddings.shape[0])
 
         _test_all_id = test_all_id[i]
-
-
         _all_ids = list(train_ids)
         _all_ids.extend(list(_test_all_id))
 
-
         anomalies = test_anom_id[i]
-
 
         # USE LOF here
         sorted_id_score_dict = lof_1.anomaly_1(
@@ -931,7 +986,7 @@ def main(argv=None):
         )
         test_result_r.append(recall)
         test_result_p.append(precison)
-
+        print ('AUC ::', auc(recall, precison))
         print('--------------------------')
         # _auc = auc(recall, precison)
         # plt.figure(figsize=[14, 8])
@@ -973,7 +1028,7 @@ def main(argv=None):
     plt.ylabel('Precision', fontsize=15)
     plt.title('Precision Recall Curve ' + res_str, fontsize=18)
     plt.legend(loc='best')
-    f_name = 'precison-recall_test_' + str(i) + '.png'
+    f_name = 'precison-recall_test_' + str(time.time()).split('.')[0] + '.png'
     f_path = os.path.join(OP_DIR, f_name)
     plt.savefig(f_path)
     plt.show()
