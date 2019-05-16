@@ -8,4 +8,5 @@ lib64/
 var/
 Data/data_3/ape_v1_train_data*.pkl
 Data/data_2/ape_v1_train_data*.pkl
+Data/data_1/ape_v1_train_data*.pkl
 
