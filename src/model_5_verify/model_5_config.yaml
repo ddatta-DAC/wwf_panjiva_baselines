@@ -1,15 +1,25 @@
 'DATA_DIR': '../../Data'
-'_DIR' : 'data_2'
+'_DIR' : 'data_1'
 'OP_DIR' : 'output'
 'SAVE_DIR' : 'save_dir'
 'MODEL_NAME' : 'my_model_v_1_2'
 'data_1':
   'learning_rate' : 0.00025
-  'use_pretrained' : False
+  'use_pretrained' : True
   'show_loss_figure' : False
   'save_loss_figure' : False
   'use_bias' : True
-  'saved_model_file' : None
+  'saved_model_file' :
+    - frozen_model_5_v18_6_1557867032.pb
+    - frozen_model_5_v18_6_1557867609.pb
+    - frozen_model_5_v18_6_1557868198.pb
+    - frozen_model_5_v18_6_1557868792.pb
+    - frozen_model_5_v18_6_1557869374.pb
+    - frozen_model_5_v18_6_1557869967.pb
+    - frozen_model_5_v18_6_1557870546.pb
+    - frozen_model_5_v18_6_1557871140.pb
+    - frozen_model_5_v18_6_1557871712.pb
+    - frozen_model_5_v18_6_1557872278.pb
   'num_epochs' : 100
   'op_dims' : 8,6
   'batchsize': 256
@@ -17,16 +27,27 @@
   'lof_K' : 18
 'data_2':
   'learning_rate' : 0.00025
-  'use_pretrained' : False
+  'use_pretrained' : True
   'show_loss_figure' : False
   'save_loss_figure' : False
   'use_bias' : True
-  'saved_model_file' : None
+  'saved_model_file' :
+    - frozen_model_5_v18_10_1557855681.pb
+    - frozen_model_5_v18_10_1557855996.pb
+    - frozen_model_5_v18_10_1557856307.pb
+    - frozen_model_5_v18_10_1557856623.pb
+    - frozen_model_5_v18_10_1557856943.pb
+    - frozen_model_5_v18_10_1557857240.pb
+    - frozen_model_5_v18_10_1557857537.pb
+    - frozen_model_5_v18_10_1557857827.pb
+    - frozen_model_5_v18_10_1557858120.pb
+    - frozen_model_5_v18_10_1557858414.pb
   'num_epochs' : 110
   'op_dims' : 8,10
   'batchsize': 256
   'alpha' : 0.0025
   'lof_K' : 20
+
 
 # Best case :
 # connect 4 : lof k =18 , alpha 0.0025 emb : 6

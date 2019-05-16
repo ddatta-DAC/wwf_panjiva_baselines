@@ -77,8 +77,9 @@ def find_subspace_anomalies(x_id, x_emb, dim_count, show_figs=False) :
     clf.fit(sample_data)
     X_scores = clf.negative_outlier_factor_
 
-    z = np.array(X_scores) * -1
+
     if show_figs:
+        z = np.array(X_scores) * -1
         y = sorted(
             z,
             reverse=True
@@ -99,8 +100,6 @@ def find_subspace_anomalies(x_id, x_emb, dim_count, show_figs=False) :
 
     X_scores = np.reshape(X_scores,-1)
     x_id = list(np.reshape(x_id,-1))
-
-
     _run_dict = {}
 
     for _id, _score in zip(x_id, X_scores):

@@ -35,6 +35,11 @@ except:
     from src.Eval import evaluation_v1
 
 try:
+    from .src.Eval import evaluation_v2
+except:
+    from src.Eval import evaluation_v2
+
+try:
     from .src.model_3 import lof_1
 except:
     from src.model_3 import lof_1
@@ -850,7 +855,7 @@ def main(argv=None):
     # ------------
     # 10 test cases
     # ------------
-
+    eval_type = 2
     for i in range(len(test_x)):
 
         # combine the test and train data - since it is a density based method
@@ -858,13 +863,26 @@ def main(argv=None):
 
         # Set up model
         model_obj = set_up_model(CONFIG, _DIR)
-        model_obj.train_model(_x)
 
+        _use_pretrained = CONFIG[_DIR]['use_pretrained']
+        if _use_pretrained is False:
+            model_obj.train_model(data_x)
+        elif _use_pretrained is True:
+            pretrained_file = None
+            pretrained_file = CONFIG[_DIR]['saved_model_file']
+            if type(pretrained_file) == list:
+                pretrained_file = pretrained_file[i]
+
+            print('Pretrained File :', pretrained_file)
+            saved_file_path = os.path.join(
+                SAVE_DIR,
+                'checkpoints',
+                pretrained_file
+            )
+            model_obj.set_pretrained_model_file(saved_file_path)
         _ep = np.vstack([entity_prob_train_x, entity_prob_test[i]])
         mean_embeddings = model_obj.get_w_embedding_mean(_x, _ep)
-
         print(data_x.shape[0], test_x[i].shape[0], _x.shape[0], mean_embeddings.shape[0])
-
         _test_all_id = test_all_id[i]
         _all_ids = list(train_ids)
         _all_ids.extend(list(_test_all_id))
@@ -884,14 +902,22 @@ def main(argv=None):
             if k1 in _test_all_id or k1 in _scored_dict_test:
                 _scored_dict_test[k1] = v
 
-        recall, precison = evaluation_v1.precision_recall_curve(
-            _scored_dict_test,
-            anomaly_id_list=anomalies
-        )
+        if eval_type == 1 :
+            recall, precison = evaluation_v1.precision_recall_curve(
+                _scored_dict_test,
+                anomaly_id_list=anomalies
+            )
+        elif eval_type == 2 :
+            recall, precison = evaluation_v2.precision_recall_curve(
+                _scored_dict_test,
+                anomaly_id_list=anomalies
+            )
+
         test_result_r.append(recall)
         test_result_p.append(precison)
         print('AUC ::', auc(recall, precison))
         print('--------------------------')
+
 
     plt.figure(figsize=[14, 8])
     j = 1
@@ -918,7 +944,12 @@ def main(argv=None):
     plt.ylabel('Precision', fontsize=15)
     plt.title('Precision Recall Curve ' + res_str, fontsize=18)
     plt.legend(loc='best')
-    f_name = 'precison-recall_test_' + str(time.time()).split('.')[0] + '.png'
+
+    f_name = None
+    if eval_type == 1 :
+        f_name = 'precison-recall_test_' + str(time.time()).split('.')[0] + '.png'
+    elif eval_type == 2 :
+        f_name = 'precison-recall_test_' + str(time.time()).split('.')[0] + '_type_2' + '.png'
     f_path = os.path.join(OP_DIR, f_name)
     plt.savefig(f_path)
     plt.show()
