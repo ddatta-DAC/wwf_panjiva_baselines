@@ -88,7 +88,7 @@ def create_args():
 
     tf.app.flags.DEFINE_string(
         'saved_model_file',
-        None,
+        'model_ape_10_k_3_frozen.pb',
         "path to data"
     )
 
@@ -126,7 +126,7 @@ def get_domain_arity():
 
     with open(f, 'rb') as fh:
         dd = pickle.load(fh)
-
+    print(dd)
     return list(dd.values())
 
 
@@ -679,7 +679,6 @@ def get_training_data(
 
     for row in vals:
         count +=1
-        print('>', count)
         val = row
         for nd in range(num_domains):
 
@@ -804,7 +803,7 @@ def main(argv):
     )
 
     model_obj.set_hyper_parameters(
-        emb_dims=[8],
+        emb_dims=[10],
         use_bias=[True, False]
     )
 
@@ -816,7 +815,7 @@ def main(argv):
     test_result_r = []
     test_result_p = []
     res = None
-    for i in range(len(test_x)-1):
+    for i in range(len(test_x)):
 
         _x = test_x[i]
         res = model_obj.inference(_x)
@@ -883,7 +882,7 @@ def main(argv):
 
     plt.figure(figsize=[14, 8])
     j = 1
-
+    mean_auc = 0
     for _x, _y in zip(test_result_r, test_result_p):
         plt.plot(
             _x,
@@ -894,8 +893,10 @@ def main(argv):
         j += 1
         _auc = auc(_x, _y)
         print(_auc)
+        mean_auc += _auc
 
-
+    mean_auc = mean_auc/len(test_result_r)
+    print('Mean ', mean_auc)
     plt.xlabel('Recall', fontsize=15)
     plt.ylabel('Precision', fontsize=15)
     plt.title('Precision Recall Curve', fontsize=17)
