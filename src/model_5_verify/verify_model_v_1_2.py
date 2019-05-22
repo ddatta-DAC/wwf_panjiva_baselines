@@ -957,7 +957,7 @@ def main(argv=None):
     elif eval_type == 2 :
         f_name = 'precison-recall_test_' + str(time.time()).split('.')[0] + '_type_2' + '.png'
     f_path = os.path.join(OP_DIR, f_name)
-    # plt.savefig(f_path)
+    #plt.savefig(f_path)
     plt.show()
     plt.close()
 
