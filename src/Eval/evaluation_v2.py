@@ -32,7 +32,8 @@ def precision_recall_curve(
         else :
             return 0
 
-    df[1] = df.apply(log_xform,axis=1)
+    # df[1] = df.apply(log_xform,axis=1)
+    # df[1]
     print(df)
     steps = 10000
     t = (np.max(df[1]) - np.min(df[1]))/steps

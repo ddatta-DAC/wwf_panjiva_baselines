@@ -1,5 +1,5 @@
 'DATA_DIR': '../../Data'
-'_DIR' : 'data_1'
+'_DIR' : 'data_2'
 'OP_DIR' : 'output'
 'SAVE_DIR' : 'save_dir'
 'MODEL_NAME' : 'my_model_v_1_2'

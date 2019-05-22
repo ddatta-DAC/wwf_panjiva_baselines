@@ -44,6 +44,12 @@ try:
 except:
     from src.model_3 import lof_1
 
+
+try :
+    from .src.model_3 import isolationForest_v1 as IF
+except:
+    from src.model_3 import isolationForest_v1 as IF
+
 # ------------------------------------ #
 cur_path = '/'.join(
     os.path.abspath(
@@ -855,8 +861,8 @@ def main(argv=None):
     # ------------
     # 10 test cases
     # ------------
-    eval_type = 2
-    for i in range(len(test_x)):
+    eval_type = 1
+    for i in range(len(test_x)-8):
 
         # combine the test and train data - since it is a density based method
         _x = np.vstack([data_x, test_x[i]])
@@ -891,7 +897,7 @@ def main(argv=None):
 
         # USE LOF here
         lof_1.KNN_K = CONFIG[_DIR]['lof_K']
-        sorted_id_score_dict = lof_1.anomaly_1(
+        sorted_id_score_dict = IF.anomaly_2(
             id_list=_all_ids,
             embed_list=mean_embeddings
         )
@@ -951,7 +957,7 @@ def main(argv=None):
     elif eval_type == 2 :
         f_name = 'precison-recall_test_' + str(time.time()).split('.')[0] + '_type_2' + '.png'
     f_path = os.path.join(OP_DIR, f_name)
-    plt.savefig(f_path)
+    # plt.savefig(f_path)
     plt.show()
     plt.close()
 

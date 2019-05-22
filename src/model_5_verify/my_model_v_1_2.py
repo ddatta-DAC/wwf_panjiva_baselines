@@ -38,6 +38,10 @@ try :
 except:
     from src.model_3 import lof_1
 
+try :
+    from .src.model_3 import isolationForest_v1 as IF
+except:
+    from src.model_3 import isolationForest_v1 as IF
 
 # ------------------------------------ #
 cur_path = '/'.join(
@@ -951,7 +955,7 @@ def main(argv=None):
     test_result_p = []
 
     domain_alpha = get_domain_alpha()
-    for i in range(len(test_x)):
+    for i in range(len(test_x)-8):
 
         # combine the test and train data - since it is a density based method
         _x = np.vstack([data_x, test_x[i]])
