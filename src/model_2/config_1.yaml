@@ -2,7 +2,7 @@
 '_DIR' : 'data_2'
 'OP_DIR' : 'output'
 'SAVE_DIR' : 'save_dir'
-'REFRESH_DATA' : False
+'REFRESH_DATA' : True
 'saved_model_file' :
     - frozen_model_5_v18_6_1557867032.pb
     - frozen_model_5_v18_6_1557867609.pb
