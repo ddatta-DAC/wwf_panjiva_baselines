@@ -58,12 +58,12 @@ def get_data_2():
     test_files = glob.glob(_test_files)
     test_x = []
 
+
     for t in test_files:
         with open(t, 'rb') as fh:
             data = pickle.load(fh)
             test_x.append(data[2])
-
-    return train_x, test_x
+    return train_x, test_x, test_files
 
 
 def get_domain_dims(data_dir):
@@ -108,11 +108,18 @@ def get_record_entity_probability(arr, _dict):
     return arr
 
 
-def setup_entity_prob_data(numeric_data, file_names, prob_dict):
+def setup_entity_prob_data(
+        numeric_data,
+        file_names,
+        prob_dict
+):
     global DATA_DIR
     domains_dims = get_domain_dims(DATA_DIR)
+
     for cur_x, _file in zip(numeric_data, file_names):
         prob_x = np.zeros(np.shape(cur_x))
+        print(prob_x.shape)
+
         for d in range(len(domains_dims)):
             _prob_dict_domain = prob_dict[d]
             _y = cur_x[:, d]
@@ -130,6 +137,7 @@ def setup_entity_prob_data(numeric_data, file_names, prob_dict):
 
 
 def main(argv):
+
     global DATA_DIR
     global _DIR
 
@@ -138,16 +146,19 @@ def main(argv):
 
     data_x = get_data_1()
     prob_dict = get_probabilities(DATA_DIR, data_x)
-    train_x, test_x = get_data_2()
+    train_x, test_x , test_files = get_data_2()
 
     numeric_data = [train_x]
     numeric_data.extend(test_x)
+    print(len(numeric_data), [_.shape for _ in numeric_data])
+
     file_names = ['entity_prob_train_x.pkl']
 
-    for k in range(len(test_x)):
+    for t_f in test_files:
+        k = (t_f.split('.')[-2]).split('_')[-1]
+        print('>>', t_f, k)
         fn = 'entity_prob_test_x_' + str(k) +'.pkl'
         file_names.append(fn)
-
     setup_entity_prob_data(numeric_data, file_names, prob_dict)
     return
 

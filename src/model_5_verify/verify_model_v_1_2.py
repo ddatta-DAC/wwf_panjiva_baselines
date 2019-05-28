@@ -751,20 +751,23 @@ def get_data():
 
     with open(entity_prob_train_file, 'rb') as fh:
         entity_prob_train_x = pickle.load(fh)
+        print(entity_prob_train_x.shape)
+        print('---')
 
-    _entity_prob_test_files = os.path.join(
-        DATA_DIR,
-        'entity_prob_test_x_*.pkl'
-    )
-
-    entity_prob_test_files = glob.glob(_entity_prob_test_files)
     entity_prob_test = []
+    for t in test_files:
+        i = ((t.split('/')[-1]).split('.')[-2]).split('_')[-1]
+        print(t, i )
+        _entity_prob_test_file = os.path.join(
+            DATA_DIR,
+            'entity_prob_test_x_'+ str(i) +'.pkl'
+        )
 
-    for t in entity_prob_test_files:
-        with open(t, 'rb') as fh:
+        entity_prob_test_file = glob.glob(_entity_prob_test_file)
+        with open(_entity_prob_test_file, 'rb') as fh:
             data = pickle.load(fh)
             entity_prob_test.append(data)
-
+    print([_.shape for _ in entity_prob_test])
     return DATA_X, test_anom_id, test_all_id, test_x, train_ids, entity_prob_train_x, entity_prob_test
 
 
@@ -835,6 +838,10 @@ def main(argv=None):
 
     data_x, test_anom_id, test_all_id, test_x, train_ids, entity_prob_train_x, entity_prob_test = get_data()
     DOMAIN_DIMS = get_domain_dims()
+    print(data_x.shape)
+    print([_.shape for _ in test_x])
+    print([_.shape for _ in  entity_prob_test])
+
 
     # Todo : uncomment these later
     # model_obj = set_up_model(CONFIG, _DIR)
@@ -862,8 +869,8 @@ def main(argv=None):
     # 10 test cases
     # ------------
     eval_type = 1
-    for i in range(len(test_x)-8):
-
+    for i in range(len(test_x)):
+        if i > 1 : break;
         # combine the test and train data - since it is a density based method
         _x = np.vstack([data_x, test_x[i]])
 
@@ -897,7 +904,7 @@ def main(argv=None):
 
         # USE LOF here
         lof_1.KNN_K = CONFIG[_DIR]['lof_K']
-        sorted_id_score_dict = IF.anomaly_2(
+        sorted_id_score_dict = lof_1.anomaly_1(
             id_list=_all_ids,
             embed_list=mean_embeddings
         )
@@ -957,7 +964,7 @@ def main(argv=None):
     elif eval_type == 2 :
         f_name = 'precison-recall_test_' + str(time.time()).split('.')[0] + '_type_2' + '.png'
     f_path = os.path.join(OP_DIR, f_name)
-    #plt.savefig(f_path)
+    # plt.savefig(f_path)
     plt.show()
     plt.close()
 

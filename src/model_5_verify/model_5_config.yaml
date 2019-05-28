@@ -1,16 +1,16 @@
 'DATA_DIR': '../../Data'
-'_DIR' : 'data_2'
+'_DIR' : 'data_1'
 'OP_DIR' : 'output'
 'SAVE_DIR' : 'save_dir'
 'MODEL_NAME' : 'my_model_v_1_2'
 'data_1':
   'learning_rate' : 0.00025
-  'use_pretrained' : True
+  'use_pretrained' : False
   'show_loss_figure' : False
   'save_loss_figure' : False
   'use_bias' : True
   'saved_model_file' :
-    - frozen_model_5_v18_6_1557867032.pb
+    - frozen_model_5_v18_6_1559002683.pb
     - frozen_model_5_v18_6_1557867609.pb
     - frozen_model_5_v18_6_1557868198.pb
     - frozen_model_5_v18_6_1557868792.pb
