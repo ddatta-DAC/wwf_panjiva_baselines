@@ -131,7 +131,7 @@ class model:
         self.save_loss_fig = True
         self.show_figure = False
         self.use_activation = False
-
+        self.test_SerialID = None
         return
 
     def set_model_hyperparams(
@@ -167,6 +167,8 @@ class model:
         self.save_loss_figure = save_loss_figure
         self.set_w_mean = True
         return
+    def set_SerialID(self, test_SerialID):
+        self.test_SerialID = test_SerialID
 
     def get_weight_variable(
             self,
@@ -180,7 +182,7 @@ class model:
             return tf.Variable(initializer(shape))
 
     def define_wbs(self):
-        print('>> Defining weights :: start')
+        # print('>> Defining weights :: start')
 
         self.W = [None] * self.num_emb_layers
         self.b = [None] * self.num_emb_layers
@@ -194,7 +196,7 @@ class model:
             if _d <= 1:
                 _d += 1
             layer_1_dims.append(_d)
-        print(layer_1_dims)
+        # print(layer_1_dims)
 
         with tf.name_scope(wb_scope_name):
             prefix = self.model_scope_name + '/' + wb_scope_name + '/'
@@ -207,23 +209,23 @@ class model:
                 self.W[l] = [None] * self.num_domains
                 self.b[l] = [None] * self.num_domains
 
-                print("----> Layer", (l + 1))
+                # print("----> Layer", (l + 1))
                 if l == 0:
                     layer_inp_dims = self.domain_dims
                     # layer_op_dims = [self.emb_dims[l]] * self.num_domains
                     layer_op_dims = layer_1_dims
-                    print(layer_inp_dims)
-                    print(layer_op_dims)
+                    # print(layer_inp_dims)
+                    # print(layer_op_dims)
                 else:
                     if l == 1:
                         layer_inp_dims = layer_1_dims
                     else:
                         layer_inp_dims = [self.emb_dims[l - 1]] * self.num_domains
                     layer_op_dims = [self.emb_dims[l]] * self.num_domains
-                    print(layer_inp_dims)
-                    print(layer_op_dims)
+                    # print(layer_inp_dims)
+                    # print(layer_op_dims)
                 for d in range(self.num_domains):
-                    print('-> Domain', (d + 1))
+                    # print('-> Domain', (d + 1))
                     _name = 'W_' + str(l) + str(d)
 
                     if self.inference is True:
@@ -249,8 +251,8 @@ class model:
                             z = self.get_weight_variable(b_dims, _name_b)
                             self.b[l][d] = z
                             self.wb_names.append(prefix + _name_b)
-        print(self.wb_names)
-        print('>> Defining weights :: end')
+        # print(self.wb_names)
+        # print('>> Defining weights :: end')
 
     def restore_model(self):
 
@@ -309,7 +311,7 @@ class model:
 
     # ---------------------------------------------------------- #
     def build_model(self):
-        print('Building model : start ')
+        # print('Building model : start ')
         self.model_scope_name = 'model'
 
         with tf.variable_scope(self.model_scope_name):
@@ -334,7 +336,7 @@ class model:
                 # for each domain
                 prev = None
                 for l in range(self.num_emb_layers):
-                    print("----> Layer", (l + 1))
+                    # print("----> Layer", (l + 1))
                     if l == 0:
                         a = tf.nn.embedding_lookup(
                             self.W[l][d],
@@ -355,7 +357,7 @@ class model:
 
                     prev = _wx_b
                 x_pos_WXb[d] = prev
-                print(x_pos_WXb[d].shape)
+                # print(x_pos_WXb[d].shape)
 
             emb_op_pos = x_pos_WXb
             self.joint_emb_op = tf.stack(emb_op_pos, axis=1)
@@ -397,12 +399,12 @@ class model:
                         self.ep_x,
                         [-1, self.ep_x.shape[-1], 1]
                     )
-                    print('ep_x shape', ep_x.shape)
+                    # print('ep_x shape', ep_x.shape)
                     ep_x = tf.tile(
                         ep_x,
                         [1, 1, self.emb_dims[-1]]
                     )
-                    print('ep_x shape', ep_x.shape)
+                    # print('ep_x shape', ep_x.shape)
 
                     # --------------------------- #
                     # apply  weight : element wise multiply
@@ -423,10 +425,10 @@ class model:
             _epsilon = tf.constant(math.pow(10, -10))
             self.score_n = []
             for _target in range(self.num_domains):
-                print('_target', _target)
+                # print('_target', _target)
                 ctxt_list = list(range(self.num_domains))
                 ctxt_list.remove(_target)
-                print(ctxt_list)
+                # print(ctxt_list)
 
                 e = tf.gather(
                     self.joint_emb_op,
@@ -437,7 +439,7 @@ class model:
                 # U is the mean of the embeddings of the context
                 # U is the context vector
                 U = tf.reduce_mean(e, axis=1)
-                print(U.shape)
+                # print(U.shape)
 
                 score_pos = tf.reduce_sum(
                     tf.multiply(
@@ -447,7 +449,7 @@ class model:
                     1,
                     keepdims=True
                 )
-                print(score_pos.shape)
+                # print(score_pos.shape)
                 score_pos = -score_pos
 
                 # calculate scores for each of the rest of possible entities
@@ -455,14 +457,14 @@ class model:
                 # setting output to different 1s for that domain
 
                 domain_size = self.domain_dims[_target]
-                print('Domain size', domain_size)
+                # print('Domain size', domain_size)
                 domain_ids = tf.constant(np.array(list(range(domain_size))))
                 domain_ids = tf.reshape(domain_ids, [-1, 1])
-                print(domain_ids)
+                # print(domain_ids)
 
                 prev = None
                 for l in range(self.num_emb_layers):
-                    print("----> Layer", (l + 1))
+                    # print("----> Layer", (l + 1))
                     if l == 0:
                         a = tf.nn.embedding_lookup(
                             self.W[l][_target],
@@ -488,20 +490,20 @@ class model:
                     #     _wx_b = tf.sigmoid(_wx_b)
                     prev = _wx_b
                 wx_b = prev
-                print(wx_b.shape)
+                # print(wx_b.shape)
                 _score_n = tf.matmul(
                     U,
                     tf.transpose(wx_b)
                 )
 
                 _score_n = tf.exp(_score_n)
-                print(_score_n.shape)
+                # print(_score_n.shape)
                 _score_n = tf.reduce_sum(
                     _score_n,
                     axis=1,
                     keepdims=True
                 )
-                print(_score_n.shape)
+                # print(_score_n.shape)
 
                 _score_n = tf.add(
                     _score_n,
@@ -530,7 +532,7 @@ class model:
 
             # self.train_opt = self.optimizer.minimize(self.loss)
             gvs = self.optimizer.compute_gradients(self.loss)
-            print([(grad, var) for grad, var in gvs])
+            # print([(grad, var) for grad, var in gvs])
             capped_gvs = [
                 (tf.clip_by_value(grad, -1.0, 1.0), var)
                 for grad, var in gvs
@@ -545,8 +547,11 @@ class model:
     def train_model(self, x):
         print('Start of training :: ')
         self.ts = str(time.time()).split('.')[0]
+        if self.test_SerialID is None:
+            f_name = 'frozen' + '_' + self.model_signature + '_' + self.ts + '.pb'
+        else:
+            f_name = 'frozen' + '_' + self.model_signature + '_serialID_' + str(self.test_SerialID) + '_' + self.ts + '.pb'
 
-        f_name = 'frozen' + '_' + self.model_signature + '_' + self.ts + '.pb'
 
         self.frozen_file = os.path.join(
             self.save_dir, 'checkpoints', f_name
@@ -616,7 +621,8 @@ class model:
 
         with tf.gfile.GFile(self.frozen_file, "wb") as f:
             f.write(frozen_graph_def.SerializeToString())
-        return
+
+        return self.frozen_file
 
     # This is an external function
     # x is the index data
@@ -635,7 +641,7 @@ class model:
                     _x = x[_b * bs:]
 
                 _output = sess.run(
-                    self.w_mean_emb_op,
+                    self.mean_emb_op,
                     feed_dict={
                         self.x_pos_inp: _x
                     }
@@ -709,7 +715,8 @@ def set_up_model(config, _dir):
         emb_dims=embedding_dims,
         batch_size=config[_dir]['batchsize'],
         num_epochs=config[_dir]['num_epochs'],
-        learning_rate=LR
+        learning_rate=LR,
+        alpha=config[_dir]['alpha']
     )
     model_obj.build_model()
     return model_obj
@@ -730,12 +737,14 @@ def get_data():
         DATA_DIR,
         'test_x_*.pkl'
     )
-    print(_test_files)
+
     test_files = glob.glob(_test_files)
+    print(test_files)
     test_x = []
     test_anom_id = []
     test_all_id = []
     for t in test_files:
+        print(t)
         with open(t, 'rb') as fh:
             data = pickle.load(fh)
             test_anom_id.append(data[0])
@@ -755,20 +764,21 @@ def get_data():
         print('---')
 
     entity_prob_test = []
+    test_SerialID = []
     for t in test_files:
         i = ((t.split('/')[-1]).split('.')[-2]).split('_')[-1]
         print(t, i )
         _entity_prob_test_file = os.path.join(
             DATA_DIR,
-            'entity_prob_test_x_'+ str(i) +'.pkl'
+            'entity_prob_test_x_'+ str(int(i)) +'.pkl'
         )
-
+        test_SerialID.append(i)
         entity_prob_test_file = glob.glob(_entity_prob_test_file)
         with open(_entity_prob_test_file, 'rb') as fh:
             data = pickle.load(fh)
             entity_prob_test.append(data)
     print([_.shape for _ in entity_prob_test])
-    return DATA_X, test_anom_id, test_all_id, test_x, train_ids, entity_prob_train_x, entity_prob_test
+    return DATA_X, test_anom_id, test_all_id, test_x, train_ids, entity_prob_train_x, entity_prob_test, test_SerialID
 
 
 def domain_apha_aux():
@@ -836,29 +846,13 @@ def main(argv=None):
 
     # ------------ #
 
-    data_x, test_anom_id, test_all_id, test_x, train_ids, entity_prob_train_x, entity_prob_test = get_data()
+    data_x, test_anom_id, test_all_id, test_x, train_ids, entity_prob_train_x, entity_prob_test, test_SerialID = get_data()
     DOMAIN_DIMS = get_domain_dims()
     print(data_x.shape)
     print([_.shape for _ in test_x])
     print([_.shape for _ in  entity_prob_test])
 
 
-    # Todo : uncomment these later
-    # model_obj = set_up_model(CONFIG, _DIR)
-    # _use_pretrained = CONFIG[_DIR]['use_pretrained']
-    # if _use_pretrained is False:
-    #     model_obj.train_model(data_x)
-    # if _use_pretrained is True:
-    #     pretrained_file = None
-    #     pretrained_file = CONFIG[_DIR]['saved_model_file']
-    #     print('Pretrained File :', pretrained_file)
-    #     saved_file_path = os.path.join(
-    #         SAVE_DIR,
-    #         'checkpoints',
-    #         pretrained_file
-    #     )
-    #     model_obj.set_pretrained_model_file(saved_file_path)
-    #
 
     test_result_r = []
     test_result_p = []
@@ -870,32 +864,51 @@ def main(argv=None):
     # ------------
     eval_type = 1
     for i in range(len(test_x)):
-        if i > 1 : break;
+
         # combine the test and train data - since it is a density based method
         _x = np.vstack([data_x, test_x[i]])
 
         # Set up model
         model_obj = set_up_model(CONFIG, _DIR)
 
+        model_obj.set_SerialID(test_SerialID[i])
+
         _use_pretrained = CONFIG[_DIR]['use_pretrained']
+
         if _use_pretrained is False:
             model_obj.train_model(data_x)
         elif _use_pretrained is True:
             pretrained_file = None
             pretrained_file = CONFIG[_DIR]['saved_model_file']
             if type(pretrained_file) == list:
-                pretrained_file = pretrained_file[i]
+                _match = '_serialID_'+str(test_SerialID[i])
 
-            print('Pretrained File :', pretrained_file)
+                # search for the one that matches test_SerialID
+
+                for _p in pretrained_file:
+                    if _match in _p:
+                        _pretrained_file = _p
+
+            print('Pretrained File :', _pretrained_file)
             saved_file_path = os.path.join(
                 SAVE_DIR,
                 'checkpoints',
-                pretrained_file
+                _pretrained_file
             )
             model_obj.set_pretrained_model_file(saved_file_path)
-        _ep = np.vstack([entity_prob_train_x, entity_prob_test[i]])
-        mean_embeddings = model_obj.get_w_embedding_mean(_x, _ep)
-        print(data_x.shape[0], test_x[i].shape[0], _x.shape[0], mean_embeddings.shape[0])
+
+        _ep = entity_prob_test[i]
+        if CONFIG[_DIR]['w_mean']:
+            mean_embeddings = model_obj.get_w_embedding_mean(_x, _ep)
+        else:
+            mean_embeddings = model_obj.get_embedding_mean(_x )
+
+        print(
+            data_x.shape[0],
+            test_x[i].shape[0],
+            _x.shape[0],
+            mean_embeddings.shape[0]
+        )
         _test_all_id = test_all_id[i]
         _all_ids = list(train_ids)
         _all_ids.extend(list(_test_all_id))
@@ -964,7 +977,7 @@ def main(argv=None):
     elif eval_type == 2 :
         f_name = 'precison-recall_test_' + str(time.time()).split('.')[0] + '_type_2' + '.png'
     f_path = os.path.join(OP_DIR, f_name)
-    # plt.savefig(f_path)
+    plt.savefig(f_path)
     plt.show()
     plt.close()
 
