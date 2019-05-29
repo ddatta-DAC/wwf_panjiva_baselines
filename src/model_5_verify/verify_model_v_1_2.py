@@ -618,9 +618,8 @@ else:
 #
 # run_experiment(_dir=_dir , exp_dict = exp_dict)
 
-<<<<<<< HEAD
-main()
-=======
 
-run_experiment(_dir=_dir , exp_dict = exp_dict)
->>>>>>> d6971d1e6beafe22021667620106592ba7746a46
+main()
+
+# run_experiment(_dir=_dir , exp_dict = exp_dict)
+
