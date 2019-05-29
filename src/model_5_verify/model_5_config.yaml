@@ -3,52 +3,53 @@
 'OP_DIR' : 'output'
 'SAVE_DIR' : 'save_dir'
 'MODEL_NAME' : 'my_model_v_1_2'
+'eval_type' : 1
+'VALIDATION_MODE' : True
+'num_jobs' : 3
 'data_1':
   'learning_rate' : 0.00025
-  'use_pretrained' : False
+  'use_pretrained' : True
   'show_loss_figure' : False
   'save_loss_figure' : False
   'use_bias' : True
-  'saved_model_file' :
-    - frozen_model_5_v18_6_1559002683.pb
-    - frozen_model_5_v18_6_1557867609.pb
-    - frozen_model_5_v18_6_1557868198.pb
-    - frozen_model_5_v18_6_1557868792.pb
-    - frozen_model_5_v18_6_1557869374.pb
-    - frozen_model_5_v18_6_1557869967.pb
-    - frozen_model_5_v18_6_1557870546.pb
-    - frozen_model_5_v18_6_1557871140.pb
-    - frozen_model_5_v18_6_1557871712.pb
-    - frozen_model_5_v18_6_1557872278.pb
-  'num_epochs' : 100
+  'saved_model_file' : False
+  'num_epochs' : 150
   'op_dims' : 8,6
   'batchsize': 256
   'alpha' : 0.0025
   'lof_K' : 18
   'w_mean' : True
+  'log_file' : 'results_data_1_log.csv'
 'data_2':
   'learning_rate' : 0.00025
   'use_pretrained' : True
   'show_loss_figure' : False
   'save_loss_figure' : False
   'use_bias' : True
-  'saved_model_file' :
-    - frozen_model_5_v18_10_serialID_1_1559056914.pb
-    - frozen_model_5_v18_10_serialID_2_1559057194.pb
-    - frozen_model_5_v18_10_serialID_3_1559058294.pb
-    - frozen_model_5_v18_10_serialID_4_1559056079.pb
-    - frozen_model_5_v18_10_serialID_5_1559057474.pb
-    - frozen_model_5_v18_10_serialID_6_1559055792.pb
-    - frozen_model_5_v18_10_serialID_7_1559058028.pb
-    - frozen_model_5_v18_10_serialID_8_1559056636.pb
-    - frozen_model_5_v18_10_serialID_9_1559057758.pb
-    - frozen_model_5_v18_10_serialID_10_1559056357.pb
-  'num_epochs' : 110
+  'saved_model_file' : False
+  'num_epochs' : 150
   'op_dims' : 8,10
   'batchsize': 256
-  'alpha' : 0.0002
+  'alpha' : 0.01
   'lof_K' : 20
   'w_mean' : True
+  'log_file' : 'results_data_2_log.csv'
+
+'data_5':
+  'learning_rate' : 0.00025
+  'use_pretrained' : True
+  'show_loss_figure' : False
+  'save_loss_figure' : False
+  'use_bias' : True
+  'saved_model_file' : False
+  'num_epochs' : 100
+  'op_dims' : 8,10
+  'batchsize': 256
+  'alpha' : 0.01
+  'lof_K' : 20
+  'w_mean' : True
+  'log_file' : 'results_data_2_log.csv'
+
 
 # Best case :
 # connect 4 : lof k =18 , alpha 0.0025 emb : 6

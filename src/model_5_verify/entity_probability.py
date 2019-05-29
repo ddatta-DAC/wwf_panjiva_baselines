@@ -99,7 +99,7 @@ def get_probabilities(data_dir, data):
                 print('0 count found')
             _res[e] = c
             _sum += c
-        _res = {k: v / _sum for k, v in _res.items()}
+        _res = {k: (v / _sum) for k, v in _res.items()}
         print(_res)
         res_dict_arr.append(_res)
         print('-----')
@@ -148,15 +148,14 @@ def main(argv):
     _DIR = argv['_dir']
     DATA_DIR = os.path.join(DATA_DIR,_DIR)
 
-
-    # data_x is a list [ train, test_!, test_2,... ]
+    # data_x is a list [ train, test_1, test_2,... ]
     data_x , test_file_list = get_data_1()
 
-    train_x, test_x, = get_data_2(test_file_list)
+    # train_x, test_x, = get_data_2(test_file_list)
+    cur_train_x = data_x[0]
 
     for i  in range(len(test_file_list)):
         cur_test_x = data_x[i+1]
-        cur_train_x = data_x[0]
         combined = np.vstack([cur_train_x,cur_test_x])
 
         # probability dictionary for this data-set
@@ -175,14 +174,6 @@ def main(argv):
             ep_f_name,
             prob_dict
         )
-
-        # file_names = ['entity_prob_train_x.pkl']
-
-    # for t_f in test_files:
-    #
-    #     print('>>', t_f, k)
-    #     fn =
-    #     file_names.append(fn)
 
     return
 
