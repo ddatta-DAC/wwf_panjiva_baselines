@@ -5,7 +5,7 @@
 'MODEL_NAME' : 'my_model_v_1_2'
 'eval_type' : 1
 'VALIDATION_MODE' : True
-'num_jobs' : 3
+'num_jobs' : 4
 'data_1':
   'learning_rate' : 0.00025
   'use_pretrained' : True
@@ -48,7 +48,7 @@
   'alpha' : 0.01
   'lof_K' : 20
   'w_mean' : True
-  'log_file' : 'results_data_2_log.csv'
+  'log_file' : 'results_data_5_log.csv'
 
 
 # Best case :

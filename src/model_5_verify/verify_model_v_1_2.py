@@ -429,9 +429,10 @@ def log_results(CONFIG, _DIR, OP_DIR, auc):
         _dict[k] = str(v)
 
     if df is not None:
-        _dict = {k: [v] for k, v in _dict.items()}
+
         df = df.append(_dict, ignore_index=True)
     else:
+        _dict = {k: [v] for k, v in _dict.items()}
         df = pd.DataFrame(_dict)
     print(df)
     df.to_csv(log_file_path, index=False)

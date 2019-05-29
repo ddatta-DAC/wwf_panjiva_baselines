@@ -1,0 +1,8 @@
+auc,learning_rate,use_pretrained,show_loss_figure,save_loss_figure,use_bias,saved_model_file,num_epochs,op_dims,batchsize,alpha,lof_K,w_mean,log_file
+0.2791625172031842,0.00025,True,False,False,True,None,150,8;6,256,1,10,True,None
+0.2777885139791125,0.00025,True,False,False,True,None,150,8;6,256,1,15,True,None
+0.27850670913865644,0.00025,True,False,False,True,None,150,8;6,256,1,18,True,None
+0.2772967795720667,0.00025,True,False,False,True,None,150,8;6,256,1,20,True,None
+0.2783149526476895,0.00025,True,False,False,True,None,150,8;6,256,1,22,True,None
+0.2792982129755721,0.00025,True,False,False,True,None,150,8;6,256,1,24,True,None
+0.2778653762095201,0.00025,True,False,False,True,None,150,8;6,256,1,30,True,None
