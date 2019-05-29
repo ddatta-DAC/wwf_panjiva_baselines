@@ -196,14 +196,6 @@ def get_data():
 
     entity_prob_train_file = os.path.join(DATA_DIR, 'entity_prob_train_x.pkl')
     entity_prob_train_x = None
-<<<<<<< HEAD
-    # with open(entity_prob_train_file, 'rb') as fh:
-    #     entity_prob_train_x = pickle.load(fh)
-    #     print(entity_prob_train_x.shape)
-    #     print('---')
-=======
-
->>>>>>> d6971d1e6beafe22021667620106592ba7746a46
 
     entity_prob_test = []
     test_SerialID = []
