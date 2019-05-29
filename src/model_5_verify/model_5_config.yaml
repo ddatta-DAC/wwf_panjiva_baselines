@@ -27,7 +27,7 @@
   'save_loss_figure' : False
   'use_bias' : True
   'saved_model_file' : False
-  'num_epochs' : 150
+  'num_epochs' : 100
   'op_dims' : 8,10
   'batchsize': 256
   'alpha' : 0.01
