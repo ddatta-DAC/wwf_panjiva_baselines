@@ -3,50 +3,52 @@
 'OP_DIR' : 'output'
 'SAVE_DIR' : 'save_dir'
 'MODEL_NAME' : 'my_model_v_1_2'
+'eval_type' : 1
+'VALIDATION_MODE' : True
+'num_jobs' : 4
 'data_1':
   'learning_rate' : 0.00025
   'use_pretrained' : True
   'show_loss_figure' : False
   'save_loss_figure' : False
   'use_bias' : True
-  'saved_model_file' :
-    - frozen_model_5_v18_6_1557867032.pb
-    - frozen_model_5_v18_6_1557867609.pb
-    - frozen_model_5_v18_6_1557868198.pb
-    - frozen_model_5_v18_6_1557868792.pb
-    - frozen_model_5_v18_6_1557869374.pb
-    - frozen_model_5_v18_6_1557869967.pb
-    - frozen_model_5_v18_6_1557870546.pb
-    - frozen_model_5_v18_6_1557871140.pb
-    - frozen_model_5_v18_6_1557871712.pb
-    - frozen_model_5_v18_6_1557872278.pb
-  'num_epochs' : 100
+  'saved_model_file' : False
+  'num_epochs' : 150
   'op_dims' : 8,6
   'batchsize': 256
   'alpha' : 0.0025
   'lof_K' : 18
+  'w_mean' : True
+  'log_file' : 'results_data_1_log.csv'
 'data_2':
   'learning_rate' : 0.00025
   'use_pretrained' : True
   'show_loss_figure' : False
   'save_loss_figure' : False
   'use_bias' : True
-  'saved_model_file' :
-    - frozen_model_5_v18_10_1557855681.pb
-    - frozen_model_5_v18_10_1557855996.pb
-    - frozen_model_5_v18_10_1557856307.pb
-    - frozen_model_5_v18_10_1557856623.pb
-    - frozen_model_5_v18_10_1557856943.pb
-    - frozen_model_5_v18_10_1557857240.pb
-    - frozen_model_5_v18_10_1557857537.pb
-    - frozen_model_5_v18_10_1557857827.pb
-    - frozen_model_5_v18_10_1557858120.pb
-    - frozen_model_5_v18_10_1557858414.pb
-  'num_epochs' : 110
+  'saved_model_file' : False
+  'num_epochs' : 150
   'op_dims' : 8,10
   'batchsize': 256
-  'alpha' : 0.0025
+  'alpha' : 0.01
   'lof_K' : 20
+  'w_mean' : True
+  'log_file' : 'results_data_2_log.csv'
+
+'data_5':
+  'learning_rate' : 0.00025
+  'use_pretrained' : True
+  'show_loss_figure' : False
+  'save_loss_figure' : False
+  'use_bias' : True
+  'saved_model_file' : False
+  'num_epochs' : 100
+  'op_dims' : 8,10
+  'batchsize': 256
+  'alpha' : 0.01
+  'lof_K' : 20
+  'w_mean' : True
+  'log_file' : 'results_data_5_log.csv'
 
 
 # Best case :
