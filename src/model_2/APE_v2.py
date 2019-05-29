@@ -17,6 +17,7 @@ from tensorflow.python.framework.graph_util import convert_variables_to_constant
 import inspect
 import matplotlib.pyplot as plt
 import sys
+import time
 import yaml
 import time
 from collections import OrderedDict
@@ -29,9 +30,9 @@ import glob
 sys.path.append('./..')
 sys.path.append('./../../.')
 try:
-    from .src.Eval import evaluation_v1
+    from .src.Eval import evaluation_v1 as eval
 except:
-    from src.Eval import evaluation_v1
+    from src.Eval import evaluation_v1 as eval
 
 try:
     from src.model_2 import APE_tf_model_1
@@ -172,6 +173,8 @@ def setup():
     global OP_DIR
     global MODEL_NAME
     global DATA_DIR
+    global domain_dims
+    global cur_path
 
     SAVE_DIR = config['SAVE_DIR']
     _DIR = config['_DIR']
@@ -388,8 +391,8 @@ def main(argv):
             num_entities=num_domains,
             inp_dims=inp_dims,
             neg_samples=FLAGS.neg_samples,
-            batch_size=FLAGS.batchsize,
-            num_epochs=FLAGS.num_epochs,
+            batch_size=config[_DIR]['batch_size'],
+            num_epochs=config[_DIR]['num_epocs'],
             lr= FLAGS.learning_rate,
             chkpt_dir=checkpoint_dir
         )
@@ -422,7 +425,7 @@ def main(argv):
         for e in tmp:
             sorted_id_score_dict[e[0]] = e[1]
 
-        recall, precison = evaluation_v1.precision_recall_curve(
+        recall, precison = eval.precision_recall_curve(
             sorted_id_score_dict,
             anomaly_id_list=anomalies
         )
@@ -431,6 +434,7 @@ def main(argv):
 
         from sklearn.metrics import auc
         _auc = auc(recall, precison)
+        print('AUC', _auc)
         plt.figure(figsize=[14, 8])
         plt.plot(
             recall,
@@ -450,28 +454,29 @@ def main(argv):
 
         print('----------------------------')
 
-        x, y = evaluation_v1.performance_by_score(
-            sorted_id_score_dict,
-            anomalies)
-
-        plt.figure(figsize=[14, 8])
-        plt.plot(
-            x,
-            y,
-            color='red', linewidth=1.75)
-        # plt.xlabel(' ', fontsize=15)
-        plt.ylabel('Percentage of anomalies detected', fontsize=15)
-        plt.title('Lowest % of scores', fontsize=15)
-
-        f_name = 'score_1_test_' + str(i) + '.png'
-        f_path = os.path.join(OP_DIR, f_name)
-
-        plt.savefig(f_path)
-        plt.close()
+        # x, y = eval.performance_by_score(
+        #     sorted_id_score_dict,
+        #     anomalies)
+        #
+        # plt.figure(figsize=[14, 8])
+        # plt.plot(
+        #     x,
+        #     y,
+        #     color='red', linewidth=1.75)
+        # # plt.xlabel(' ', fontsize=15)
+        # plt.ylabel('Percentage of anomalies detected', fontsize=15)
+        # plt.title('Lowest % of scores', fontsize=15)
+        #
+        # f_name = 'score_1_test_' + str(i) + '.png'
+        # f_path = os.path.join(OP_DIR, f_name)
+        #
+        # plt.savefig(f_path)
+        # plt.close()
 
     plt.figure(figsize=[14, 8])
     j = 1
     mean_auc = 0
+    all_auc = []
     for _x, _y in zip(test_result_r, test_result_p):
         plt.plot(
             _x,
@@ -483,8 +488,9 @@ def main(argv):
         _auc = auc(_x, _y)
         print(_auc)
         mean_auc += _auc
+        all_auc.append(_auc)
+    mean_auc = np.mean(all_auc)
 
-    mean_auc = mean_auc/len(test_result_r)
     print('Mean ', mean_auc)
     plt.xlabel('Recall', fontsize=15)
     plt.ylabel('Precision', fontsize=15)
@@ -504,8 +510,24 @@ def main(argv):
         _y,
         linewidth=1.75
     )
+
     # plt.show()
     plt.close()
+    # save the results
+    _dict = {
+        'mean_auc' : mean_auc,
+        'all_auc' : ';'.join([str(_) for _ in all_auc])
+    }
+    for k,v in config[_DIR]:
+        _dict[k] = str(v)
+
+    _dict = { k:[v] for k,v in _dict.items()}
+    df = pd.DataFrame(_dict)
+
+    res_fname = 'ape_result'+ str(time.time()).split('.')[0]+'.csv'
+    df.to_csv(
+        os.path.join(OP_DIR,res_fname)
+    )
 
 # ---------------------------- #
 

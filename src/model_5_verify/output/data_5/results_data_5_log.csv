@@ -1,0 +1,2 @@
+auc,learning_rate,use_pretrained,show_loss_figure,save_loss_figure,use_bias,saved_model_file,num_epochs,op_dims,batchsize,alpha,lof_K,w_mean,log_file
+<function auc at 0x7faacb9f5d90>,0.00025,True,False,False,True,None,100,"8,10",256,1.0,8,True,None

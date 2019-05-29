@@ -17,6 +17,8 @@ from tensorflow.python.framework.graph_util import convert_variables_to_constant
 import time
 import inspect
 from collections import OrderedDict
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from mpl_toolkits.mplot3d import Axes3D
@@ -193,11 +195,11 @@ def get_data():
         train_ids = pickle.load(fh)
 
     entity_prob_train_file = os.path.join(DATA_DIR, 'entity_prob_train_x.pkl')
-
-    with open(entity_prob_train_file, 'rb') as fh:
-        entity_prob_train_x = pickle.load(fh)
-        print(entity_prob_train_x.shape)
-        print('---')
+    entity_prob_train_x = None
+    # with open(entity_prob_train_file, 'rb') as fh:
+    #     entity_prob_train_x = pickle.load(fh)
+    #     print(entity_prob_train_x.shape)
+    #     print('---')
 
     entity_prob_test = []
     test_SerialID = []
@@ -440,7 +442,7 @@ def log_results(CONFIG, _DIR, OP_DIR, auc):
     return
 
 
-def main(argv=None):
+def main():
     global embedding_dims
     global SAVE_DIR
     global _DIR
@@ -501,7 +503,7 @@ def main(argv=None):
 
     print('Mean AUC', np.mean(all_auc))
     mean_auc = np.mean(all_auc)
-    log_results(CONFIG, _DIR, OP_DIR, auc)
+    # log_results(CONFIG, _DIR, OP_DIR, auc)
 
 
 # ----------------------------------------------------------------- #
@@ -617,6 +619,7 @@ if args.dir == 'None':
     _dir = 'data_3'
 else:
     _dir = args.dir
+#
+# run_experiment(_dir=_dir , exp_dict = exp_dict)
 
-
-run_experiment(_dir=_dir , exp_dict = exp_dict)
+main()
