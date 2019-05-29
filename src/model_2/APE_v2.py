@@ -171,6 +171,7 @@ def setup():
     global config
     global OP_DIR
     global MODEL_NAME
+    global DATA_DIR
 
     SAVE_DIR = config['SAVE_DIR']
     _DIR = config['_DIR']
@@ -354,6 +355,7 @@ def main(argv):
     global OP_DIR
     global SAVE_DIR
     global config
+    setup()
 
     if not os.path.exists(SAVE_DIR):
         os.mkdir(SAVE_DIR)
