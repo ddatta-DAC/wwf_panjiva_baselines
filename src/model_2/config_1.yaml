@@ -1,8 +1,9 @@
 'DATA_DIR': '../../Data'
-'_DIR' : 'data_2'
+'_DIR' : 'data_5'
 'OP_DIR' : 'output'
 'SAVE_DIR' : 'save_dir'
-'REFRESH_DATA' : False
+'REFRESH_DATA' : True
+'MODEL_NAME': 'model_ape'
 'saved_model_file' :
     - frozen_model_5_v18_6_1557867032.pb
     - frozen_model_5_v18_6_1557867609.pb
@@ -14,3 +15,13 @@
     - frozen_model_5_v18_6_1557871140.pb
     - frozen_model_5_v18_6_1557871712.pb
     - frozen_model_5_v18_6_1557872278.pb
+'data_1':
+    'embed_size': 6
+'data_2':
+    'embed_size': 8
+'data_5':
+    'embed_size': 4
+'dirs':
+    - 'data_1'
+    - 'data_2'
+    - 'data_5'

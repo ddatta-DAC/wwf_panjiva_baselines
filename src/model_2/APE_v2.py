@@ -1,3 +1,6 @@
+# this is an improvement over APE_V1
+# key point : pure unsupervised
+
 # ----------------------- #
 # A modified version of APE
 # with SGNS instead
@@ -66,11 +69,13 @@ def create_args():
         0.001,
         'Initial learning rate.'
     )
+
     tf.app.flags.DEFINE_integer(
         'batchsize',
         1024,
         'size of batch'
     )
+
     tf.app.flags.DEFINE_integer(
         'op_dim',
         6,
@@ -160,33 +165,42 @@ CONFIG_FILE = 'config_1.yaml'
 with open(CONFIG_FILE) as f:
     config = yaml.safe_load(f)
 
-SAVE_DIR = config['SAVE_DIR']
-_DIR = config['_DIR']
-OP_DIR = config['OP_DIR']
-DATA_DIR = config['DATA_DIR']
-if not os.path.exists(SAVE_DIR):
-    os.mkdir(SAVE_DIR)
-SAVE_DIR = os.path.join(SAVE_DIR, _DIR)
+def setup():
+    global SAVE_DIR
+    global _DIR
+    global config
+    global OP_DIR
+    global MODEL_NAME
+    global DATA_DIR
 
-print(OP_DIR)
-print(SAVE_DIR)
-if not os.path.exists(SAVE_DIR):
-    os.mkdir(SAVE_DIR)
+    SAVE_DIR = config['SAVE_DIR']
+    _DIR = config['_DIR']
+    OP_DIR = config['OP_DIR']
+    DATA_DIR = config['DATA_DIR']
+    if not os.path.exists(SAVE_DIR):
+        os.mkdir(SAVE_DIR)
+    SAVE_DIR = os.path.join(SAVE_DIR, _DIR)
 
-if not os.path.exists(OP_DIR):
-    os.mkdir(OP_DIR)
+    print(OP_DIR)
+    print(SAVE_DIR)
+    if not os.path.exists(SAVE_DIR):
+        os.mkdir(SAVE_DIR)
 
-OP_DIR = os.path.join(OP_DIR, _DIR)
+    if not os.path.exists(OP_DIR):
+        os.mkdir(OP_DIR)
 
-if not os.path.exists(OP_DIR):
-    os.mkdir(OP_DIR)
-MODEL_NAME = 'model_ape'
+    OP_DIR = os.path.join(OP_DIR, _DIR)
+    APE_tf_model_1._DIR = _DIR
 
-embedding_dims = [16]
-domain_dims = get_domain_arity()
-cur_path = get_cur_path()
+    APE_tf_model_1.OP_DIR = OP_DIR
+    if not os.path.exists(OP_DIR):
+        os.mkdir(OP_DIR)
+    MODEL_NAME = 'model_ape'
 
-print(cur_path)
+
+    domain_dims = get_domain_arity()
+    cur_path = get_cur_path()
+
 
 
 # ----------------------------------------- #
@@ -198,7 +212,8 @@ print(cur_path)
 
 def get_training_data(
         data_x,
-        neg_samples
+        neg_samples,
+        index
 ):
     global DATA_DIR
     global _DIR
@@ -225,9 +240,11 @@ def get_training_data(
         inp_dims[d] = domain_dims[d]
     # print('Input dimensions', inp_dims)
 
-    TRAIN_DATA_FILE_NAME = 'ape_v1_train_data_'+ str(neg_samples) +'.pkl'
+    TRAIN_DATA_FILE_NAME = 'ape_v1_train_data_'+ str(neg_samples) + str(index) + '.pkl'
     TRAIN_DATA_FILE = os.path.join(DATA_DIR, _DIR, TRAIN_DATA_FILE_NAME)
     print(TRAIN_DATA_FILE)
+
+
     if os.path.exists(TRAIN_DATA_FILE):
         with open(TRAIN_DATA_FILE, 'rb') as fh:
             data = pickle.load(fh)
@@ -240,7 +257,6 @@ def get_training_data(
     term_2 = []
     term_4 = []
     count = 0
-
 
     for row in vals:
         count +=1
@@ -334,9 +350,12 @@ def get_data():
 
 # --------------------------- #
 def main(argv):
+
     global _DIR
     global OP_DIR
     global SAVE_DIR
+    global config
+    setup()
 
     if not os.path.exists(SAVE_DIR):
         os.mkdir(SAVE_DIR)
@@ -344,43 +363,47 @@ def main(argv):
             os.mkdir(os.path.join(SAVE_DIR, _DIR))
 
     checkpoint_dir = os.path.join(SAVE_DIR)
-
     print(os.getcwd())
 
 
-
     data_x, test_anom_id, test_all_id, test_x =  get_data()
-    data, inp_dims= get_training_data(
-        data_x,
-        FLAGS.neg_samples
-    )
+    count_test_sets = len(test_x)
 
-
-    num_domains = len(inp_dims)
-    model_obj = APE_tf_model_1.model_ape_1()
-    model_obj.set_model_params(
-        num_entities=num_domains,
-        inp_dims=inp_dims,
-        neg_samples=FLAGS.neg_samples,
-        batch_size=FLAGS.batchsize,
-        num_epochs=FLAGS.num_epochs,
-        chkpt_dir=checkpoint_dir
-    )
-
-    model_obj.set_hyper_parameters(
-        emb_dims=[10],
-        use_bias=[True, False]
-    )
-
-    print(FLAGS.use_pretrained)
-    if FLAGS.use_pretrained is False:
-        model_obj.build_model()
-        model_obj.train_model(data)
 
     test_result_r = []
     test_result_p = []
     res = None
-    for i in range(len(test_x)):
+    for i in range(count_test_sets):
+
+        train_data_x = np.vstack([data_x, test_x[i]])
+        data, inp_dims = get_training_data(
+            train_data_x,
+            FLAGS.neg_samples,
+            index=i
+        )
+
+        num_domains = len(inp_dims)
+        model_obj = APE_tf_model_1.model_ape_1(MODEL_NAME)
+        model_obj.set_model_params(
+            num_entities=num_domains,
+            inp_dims=inp_dims,
+            neg_samples=FLAGS.neg_samples,
+            batch_size=FLAGS.batchsize,
+            num_epochs=FLAGS.num_epochs,
+            lr= FLAGS.learning_rate,
+            chkpt_dir=checkpoint_dir
+        )
+
+        _emb_size = int(config[_DIR]['embed_size'])
+        model_obj.set_hyper_parameters(
+            emb_dims=[_emb_size],
+            use_bias=[True, False]
+        )
+
+        print(FLAGS.use_pretrained)
+        if FLAGS.use_pretrained is False:
+            model_obj.build_model()
+            model_obj.train_model(data)
 
         _x = test_x[i]
         _x = np.vstack([_x,data_x] )
@@ -481,7 +504,7 @@ def main(argv):
         _y,
         linewidth=1.75
     )
-    plt.show()
+    # plt.show()
     plt.close()
 
 # ---------------------------- #
