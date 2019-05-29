@@ -165,33 +165,40 @@ CONFIG_FILE = 'config_1.yaml'
 with open(CONFIG_FILE) as f:
     config = yaml.safe_load(f)
 
-SAVE_DIR = config['SAVE_DIR']
-_DIR = config['_DIR']
-OP_DIR = config['OP_DIR']
-DATA_DIR = config['DATA_DIR']
-if not os.path.exists(SAVE_DIR):
-    os.mkdir(SAVE_DIR)
-SAVE_DIR = os.path.join(SAVE_DIR, _DIR)
+def setup():
+    global SAVE_DIR
+    global _DIR
+    global config
+    global OP_DIR
+    global MODEL_NAME
 
-print(OP_DIR)
-print(SAVE_DIR)
-if not os.path.exists(SAVE_DIR):
-    os.mkdir(SAVE_DIR)
+    SAVE_DIR = config['SAVE_DIR']
+    _DIR = config['_DIR']
+    OP_DIR = config['OP_DIR']
+    DATA_DIR = config['DATA_DIR']
+    if not os.path.exists(SAVE_DIR):
+        os.mkdir(SAVE_DIR)
+    SAVE_DIR = os.path.join(SAVE_DIR, _DIR)
 
-if not os.path.exists(OP_DIR):
-    os.mkdir(OP_DIR)
+    print(OP_DIR)
+    print(SAVE_DIR)
+    if not os.path.exists(SAVE_DIR):
+        os.mkdir(SAVE_DIR)
 
-OP_DIR = os.path.join(OP_DIR, _DIR)
-APE_tf_model_1._DIR = _DIR
+    if not os.path.exists(OP_DIR):
+        os.mkdir(OP_DIR)
 
-APE_tf_model_1.OP_DIR = OP_DIR
-if not os.path.exists(OP_DIR):
-    os.mkdir(OP_DIR)
-MODEL_NAME = 'model_ape'
+    OP_DIR = os.path.join(OP_DIR, _DIR)
+    APE_tf_model_1._DIR = _DIR
 
-embedding_dims = [16]
-domain_dims = get_domain_arity()
-cur_path = get_cur_path()
+    APE_tf_model_1.OP_DIR = OP_DIR
+    if not os.path.exists(OP_DIR):
+        os.mkdir(OP_DIR)
+    MODEL_NAME = 'model_ape'
+
+
+    domain_dims = get_domain_arity()
+    cur_path = get_cur_path()
 
 
 
@@ -249,7 +256,6 @@ def get_training_data(
     term_2 = []
     term_4 = []
     count = 0
-
 
     for row in vals:
         count +=1
@@ -347,6 +353,7 @@ def main(argv):
     global _DIR
     global OP_DIR
     global SAVE_DIR
+    global config
 
     if not os.path.exists(SAVE_DIR):
         os.mkdir(SAVE_DIR)
@@ -359,10 +366,6 @@ def main(argv):
 
     data_x, test_anom_id, test_all_id, test_x =  get_data()
     count_test_sets = len(test_x)
-
-
-
-
 
 
     test_result_r = []
@@ -382,7 +385,6 @@ def main(argv):
         model_obj.set_model_params(
             num_entities=num_domains,
             inp_dims=inp_dims,
-
             neg_samples=FLAGS.neg_samples,
             batch_size=FLAGS.batchsize,
             num_epochs=FLAGS.num_epochs,
@@ -390,8 +392,9 @@ def main(argv):
             chkpt_dir=checkpoint_dir
         )
 
+        _emb_size = int(config[_DIR]['embed_size'])
         model_obj.set_hyper_parameters(
-            emb_dims=[10],
+            emb_dims=[_emb_size],
             use_bias=[True, False]
         )
 
@@ -499,7 +502,7 @@ def main(argv):
         _y,
         linewidth=1.75
     )
-    plt.show()
+    # plt.show()
     plt.close()
 
 # ---------------------------- #
