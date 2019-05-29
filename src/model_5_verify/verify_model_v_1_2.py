@@ -193,11 +193,8 @@ def get_data():
         train_ids = pickle.load(fh)
 
     entity_prob_train_file = os.path.join(DATA_DIR, 'entity_prob_train_x.pkl')
+    entity_prob_train_x = None
 
-    with open(entity_prob_train_file, 'rb') as fh:
-        entity_prob_train_x = pickle.load(fh)
-        print(entity_prob_train_x.shape)
-        print('---')
 
     entity_prob_test = []
     test_SerialID = []
