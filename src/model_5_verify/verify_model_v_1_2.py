@@ -490,7 +490,7 @@ def main():
             entity_prob_test,
             eval_type)
 
-        for idx in range(len(test_x))
+        for idx in range(len(test_x[:1]))
     )
 
     all_auc = [_[0] for _ in all_res]
@@ -550,7 +550,7 @@ def run_experiment(
     max_count = CONFIG['num_jobs']
 
     for exp_emb_size in exp_dict[_DIR]['exp_emb_size']:
-        CONFIG[_DIR]['op_dims'] = [8, exp_emb_size]
+        CONFIG[_DIR]['op_dims'] = exp_emb_size
 
         for alpha in exp_dict[_DIR]['alpha']:
             CONFIG[_DIR]['alpha'] = alpha
@@ -587,18 +587,18 @@ def run_experiment(
 
 exp_dict = {
     'data_1': {
-        'exp_emb_size': [6, 8, 10, 12, 14, 16],
+        'exp_emb_size': [[8,6], [8,8], [8,10], [8,12], [8,14], [8,8,6], [8,8,8], [8,10,8], [8,10,6], [8,12,6], [8,12,8] ],
         'alpha': [1, 0.1, 0.01, 0.001, 0.0001],
         'lof_k': [10, 15, 18, 20, 22, 24, 30]
-
     },
     'data_2': {
-        'exp_emb_size': [6, 8, 10, 12, 14, 16],
+        'exp_emb_size': [[8,6], [8,8], [8,10], [8,12], [8,14], [8,8,6], [8,8,8], [8,10,8], [8,10,6], [8,12,6], [8,12,8] ],
         'lof_k': [10, 15, 18, 20, 22, 24, 30],
         'alpha': [1, 0.1, 0.01, 0.001, 0.0001]
     },
+
     'data_5': {
-        'exp_emb_size': [4, 6, 8, 10],
+        'exp_emb_size': [ [8,3],[8,4], [8,5], [8,6], [8,8]],
         'lof_k': [10, 12, 15, 18, 20, 22, 24],
         'alpha': [1, 0.1, 0.01, 0.001, 0.0001]
     }

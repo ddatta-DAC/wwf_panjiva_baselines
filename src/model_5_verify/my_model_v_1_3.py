@@ -468,6 +468,10 @@ class model:
 
         num_batches = x_pos.shape[0] // bs
         losses = []
+
+        frozen_graph_def = None
+        Check_Save_Prev = False
+
         print('Num batches :', num_batches)
         for e in range(self.num_epochs):
             t1 = time.time()
@@ -489,8 +493,22 @@ class model:
                 if _b % 2000 == 0:
                     print(np.mean(loss))
                 if np.isnan(np.mean(loss)):
-                    print('[ERROR] Loss is NaN !!!')
+                    print('[ERROR] Loss is NaN !!!, breaking...')
+                    Check_Save_Prev = True
                     break
+                else:
+                    graph_def = tf.get_default_graph().as_graph_def()
+                    frozen_graph_def = convert_variables_to_constants(
+                        self.sess,
+                        graph_def,
+                        self.wb_names
+                    )
+
+            if Check_Save_Prev is True:
+                break
+
+
+
 
             t2 = time.time()
             t = (t2 - t1) / 60
@@ -514,12 +532,12 @@ class model:
 
             plt.close()
 
-        graph_def = tf.get_default_graph().as_graph_def()
-        frozen_graph_def = convert_variables_to_constants(
-            self.sess,
-            graph_def,
-            self.wb_names
-        )
+        # graph_def = tf.get_default_graph().as_graph_def()
+        # frozen_graph_def = convert_variables_to_constants(
+        #     self.sess,
+        #     graph_def,
+        #     self.wb_names
+        # )
 
         with tf.gfile.GFile(self.frozen_file, "wb") as f:
             f.write(frozen_graph_def.SerializeToString())

@@ -13,8 +13,8 @@
   'save_loss_figure' : False
   'use_bias' : True
   'saved_model_file' : False
-  'num_epochs' : 150
-  'op_dims' : 8,8,6
+  'num_epochs' : 200
+  'op_dims' : 8,12
   'batchsize': 256
   'alpha' : 0.00025
   'lof_K' : 20
@@ -27,9 +27,9 @@
   'save_loss_figure' : False
   'use_bias' : True
   'saved_model_file' : False
-  'num_epochs' : 100
+  'num_epochs' : 250
   'op_dims' : 8,10
-  'batchsize': 256
+  'batchsize': 512
   'alpha' : 0.01
   'lof_K' : 20
   'w_mean' : True
@@ -44,7 +44,7 @@
   'saved_model_file' : False
   'num_epochs' : 100
   'op_dims' : 8,10
-  'batchsize': 256
+  'batchsize': 128
   'alpha' : 0.1
   'lof_K' : 20
   'w_mean' : True
