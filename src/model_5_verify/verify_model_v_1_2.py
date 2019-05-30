@@ -18,6 +18,7 @@ import time
 import inspect
 from collections import OrderedDict
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
@@ -506,8 +507,8 @@ def main():
 # find out which model works best
 # ----------------------------------------------------------------- #
 def run_experiment(
-        _dir=None ,
-        exp_dict = None
+        _dir=None,
+        exp_dict=None
 ):
     global embedding_dims
     global SAVE_DIR
@@ -587,39 +588,38 @@ def run_experiment(
 
 exp_dict = {
     'data_1': {
-        'exp_emb_size': [[8,6], [8,8], [8,10], [8,12], [8,14], [8,8,6], [8,8,8], [8,10,8], [8,10,6], [8,12,6], [8,12,8] ],
+        'exp_emb_size': [[8, 6], [8, 8], [8, 10], [8, 12], [8, 14],
+                         [8, 8, 6], [8, 8, 8], [8, 10, 8], [8, 10, 6],
+                         [8, 12, 6], [8, 12, 8]],
         'alpha': [1, 0.1, 0.01, 0.001, 0.0001],
         'lof_k': [10, 15, 18, 20, 22, 24, 30]
     },
     'data_2': {
-        'exp_emb_size': [[8,6], [8,8], [8,10], [8,12], [8,14], [8,8,6], [8,8,8], [8,10,8], [8,10,6], [8,12,6], [8,12,8] ],
+        'exp_emb_size': [[8, 6], [8, 8], [8, 10], [8, 12], [8, 14],
+                         [8, 8, 6], [8, 8, 8], [8, 10, 8], [8, 10, 6],
+                         [8, 12, 6], [8, 12, 8]],
         'lof_k': [10, 15, 18, 20, 22, 24, 30],
         'alpha': [1, 0.1, 0.01, 0.001, 0.0001]
     },
 
     'data_5': {
-        'exp_emb_size': [ [8,3],[8,4], [8,5], [8,6], [8,8]],
+        'exp_emb_size': [[8, 3], [8, 4], [8, 5], [8, 6], [8, 8]],
         'lof_k': [10, 12, 15, 18, 20, 22, 24],
         'alpha': [1, 0.1, 0.01, 0.001, 0.0001]
     }
 
 }
 
-
-
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--dir", nargs='?', default="None")
 args = parser.parse_args()
 
 if args.dir == 'None':
-    _dir = 'data_3'
+    _dir = 'data_2'
 else:
     _dir = args.dir
-#
-# run_experiment(_dir=_dir , exp_dict = exp_dict)
 
 
-main()
+# main()
 
-# run_experiment(_dir=_dir , exp_dict = exp_dict)
-
+run_experiment(_dir=_dir , exp_dict = exp_dict)
