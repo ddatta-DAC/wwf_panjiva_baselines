@@ -6,6 +6,8 @@ import numpy as np
 import glob
 import pandas as pd
 import os
+
+from numpy.core._multiarray_umath import ndarray
 from sklearn.manifold import TSNE
 import sys
 from tensorflow.python.framework.graph_util import convert_variables_to_constants
@@ -473,8 +475,9 @@ class model:
         Check_Save_Prev = False
 
         print('Num batches :', num_batches)
-        last_5_epochs_loss = []
-        last_5_graph_defs = []
+        last_10_epochs_loss = []
+        last_10_graph_defs = []
+
         for e in range(self.num_epochs):
 
             t1 = time.time()
@@ -497,32 +500,51 @@ class model:
                 if _b % 200 == 0:
                     print(batch_loss)
 
-                if np.isnan(np.mean(loss)):
-                    print('[ERROR] Loss is NaN !!!, breaking...')
+                if np.isnan(batch_loss):
                     Check_Save_Prev = True
+                    print('[ERROR] Loss is NaN !!!, breaking...')
                     break
-                else:
+                # else:
+                #     last_10_epochs_loss.append(batch_loss)
+                #     last_10_epochs_loss = last_10_epochs_loss[-10:]
 
-                    last_5_epochs_loss.append(batch_loss)
-                    last_5_epochs_loss = last_5_epochs_loss[-5:]
-
-                    graph_def = tf.get_default_graph().as_graph_def()
-                    frozen_graph_def = convert_variables_to_constants(
-                        self.sess,
-                        graph_def,
-                        self.wb_names
-                    )
-                    last_5_graph_defs.append(frozen_graph_def)
-                    last_5_graph_defs = last_5_graph_defs[-5:]
-
+                    # graph_def = tf.get_default_graph().as_graph_def()
+                    # frozen_graph_def = convert_variables_to_constants(
+                    #     self.sess,
+                    #     graph_def,
+                    #     self.wb_names
+                    # )
+                    # print(type(graph_def))
+                    # last_10_graph_defs.append(frozen_graph_def)
+                    # last_10_graph_defs = last_10_graph_defs[-10:]
 
 
             if Check_Save_Prev is True:
                 break
+            else:
+                graph_def = tf.get_default_graph().as_graph_def()
+                frozen_graph_def = convert_variables_to_constants(
+                    self.sess,
+                    graph_def,
+                    self.wb_names
+                )
+                with tf.gfile.GFile(self.frozen_file, "wb") as f:
+                    f.write(frozen_graph_def.SerializeToString())
 
-            t2 = time.time()
-            t = (t2 - t1) / 60
-            print('Epoch ', e + 1, 'Time elapsed in epoch : ', t, 'minutes')
+                t2 = time.time()
+                t = (t2 - t1) / 60
+                print('Epoch ', e + 1, 'Time elapsed in epoch : ', t, 'minutes')
+
+        # last_5_epochs_loss = last_10_epochs_loss[-5:]
+        # last_5_graph_defs = last_10_graph_defs[-5:]
+        # min_idx = np.argmin(last_5_epochs_loss)
+
+
+        # frozen_graph_def = last_5_graph_defs[min_idx]
+        # print(' > ', len(last_5_graph_defs) )
+        # with tf.gfile.GFile(self.frozen_file, "wb") as f:
+        #     f.write(frozen_graph_def.SerializeToString())
+
 
         # print('Losses :', losses)
         if self.save_loss_fig or self.show_loss_figure:
@@ -551,11 +573,6 @@ class model:
 
         # select the one with least loss
 
-        min_idx = np.argmin (last_5_epochs_loss)
-        frozen_graph_def = last_5_graph_defs[min_idx]
-
-        with tf.gfile.GFile(self.frozen_file, "wb") as f:
-            f.write(frozen_graph_def.SerializeToString())
 
         return self.frozen_file
 
