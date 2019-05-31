@@ -7,7 +7,7 @@
 'VALIDATION_MODE' : True
 'num_jobs' : 4
 'data_1':
-  'learning_rate' : 0.00025
+  'learning_rate' : 0.0005
   'use_pretrained' : True
   'show_loss_figure' : False
   'save_loss_figure' : False
