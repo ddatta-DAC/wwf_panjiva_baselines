@@ -491,7 +491,7 @@ def main():
             entity_prob_test,
             eval_type)
 
-        for idx in range(len(test_x[:1]))
+        for idx in range(len(test_x))
     )
 
     all_auc = [_[0] for _ in all_res]
@@ -618,6 +618,6 @@ else:
     _dir = args.dir
 
 
-# main()
+main()
 
-run_experiment(_dir=_dir , exp_dict = exp_dict)
+# run_experiment(_dir=_dir , exp_dict = exp_dict)
