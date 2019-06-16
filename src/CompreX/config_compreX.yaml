@@ -1,0 +1,11 @@
+'DATA_DIR': '../../Data'
+'_DIR' : 'data_1'
+'OP_DIR' : 'output'
+'SAVE_DIR' : 'save_dir'
+'REFRESH_DATA' : True
+'MODEL_NAME': 'compreX'
+'data_1': False
+'data_2': False
+'dirs':
+    - 'data_1'
+    - 'data_2'
