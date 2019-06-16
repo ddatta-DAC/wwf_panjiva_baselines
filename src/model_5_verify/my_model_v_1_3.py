@@ -497,8 +497,8 @@ class model:
                 )
                 losses.append(np.mean(loss))
                 batch_loss = np.mean(loss)
-                if _b % 200 == 0:
-                    print(batch_loss)
+                # if _b % 200 == 0:
+                #     print(batch_loss)
 
                 if np.isnan(batch_loss):
                     Check_Save_Prev = True

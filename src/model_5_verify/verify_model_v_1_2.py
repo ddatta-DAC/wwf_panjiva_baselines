@@ -449,6 +449,7 @@ def main():
     global MODEL_NAME
     global DOMAIN_DIMS
 
+    time_1 = time.time()
     with open(CONFIG_FILE) as f:
         CONFIG = yaml.safe_load(f)
 
@@ -491,9 +492,11 @@ def main():
             entity_prob_test,
             eval_type)
 
-        for idx in range(len(test_x))
+        for idx in range(len(test_x[:1]))
     )
+    time_2 = time.time()
 
+    print('time taken ', time_2 - time_1 )
     all_auc = [_[0] for _ in all_res]
     test_result_r = [_[1] for _ in all_res]
     test_result_p = [_[2] for _ in all_res]
