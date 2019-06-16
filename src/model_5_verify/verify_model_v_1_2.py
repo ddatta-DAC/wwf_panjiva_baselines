@@ -491,7 +491,7 @@ def main():
             entity_prob_test,
             eval_type)
 
-        for idx in range(len(test_x[:1]))
+        for idx in range(len(test_x))
     )
 
     all_auc = [_[0] for _ in all_res]
@@ -587,18 +587,16 @@ def run_experiment(
 
 exp_dict = {
     'data_1': {
-        'exp_emb_size': [[8, 6], [8, 8], [8, 10], [8, 12], [8, 14],
+        'exp_emb_size': [  [8, 12], [8, 14],
                          [8, 8, 6], [8, 8, 8], [8, 10, 8], [8, 10, 6],
                          [8, 12, 6], [8, 12, 8]],
         'alpha': [1, 0.1, 0.01, 0.001, 0.0001],
         'lof_k': [10, 15, 18, 20, 22, 24, 30]
     },
     'data_2': {
-        'exp_emb_size': [[8, 6], [8, 8], [8, 10], [8, 12], [8, 14],
-                         [8, 8, 6], [8, 8, 8], [8, 10, 8], [8, 10, 6],
-                         [8, 12, 6], [8, 12, 8]],
-        'lof_k': [10, 15, 18, 20, 22, 24, 30],
-        'alpha': [1, 0.1, 0.01, 0.001, 0.0001]
+        'exp_emb_size': [ [8, 12, 8]],
+        'lof_k': [ 15, 18, 20, 22, 24, 30],
+        'alpha': [1, 0.1, 0.05, 0.01]
     },
 
     'data_5': {
@@ -619,6 +617,6 @@ else:
     _dir = args.dir
 
 
-# main()
+main()
 
-run_experiment(_dir=_dir , exp_dict = exp_dict)
+# run_experiment(_dir=_dir , exp_dict = exp_dict)
