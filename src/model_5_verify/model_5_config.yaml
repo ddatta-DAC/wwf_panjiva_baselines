@@ -1,5 +1,5 @@
 'DATA_DIR': '../../Data'
-'_DIR' : 'data_2'
+'_DIR' : 'data_1'
 'OP_DIR' : 'output'
 'SAVE_DIR' : 'save_dir'
 'MODEL_NAME' : 'my_model_v_1_2'
@@ -8,7 +8,7 @@
 'num_jobs' : 4
 'data_1':
   'learning_rate' : 0.0005
-  'use_pretrained' : True
+  'use_pretrained' : False
   'show_loss_figure' : False
   'save_loss_figure' : False
   'use_bias' : True
@@ -22,7 +22,7 @@
   'log_file' : 'results_data_1_log.csv'
 'data_2':
   'learning_rate' : 0.0005
-  'use_pretrained' : True
+  'use_pretrained' : False
   'show_loss_figure' : False
   'save_loss_figure' : False
   'use_bias' : True
@@ -31,7 +31,7 @@
   'op_dims' : 8,10
   'batchsize': 512
   'alpha' : 0.01
-  'lof_K' : 20
+  'lof_K' : 18
   'w_mean' : True
   'log_file' : 'results_data_2_log.csv'
 

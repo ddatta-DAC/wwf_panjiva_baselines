@@ -37,8 +37,8 @@ sys.path.append(cur_path)
 # SAVE_DIR = model_3_v1.SAVE_DIR
 # OP_DIR = model_3_v1.OP_DIR
 # DATA_DIR = model_3_v1.DATA_DIR
-print(cur_path)
-# print(OP_DIR)
+# print(cur_path)
+# # print(OP_DIR)
 KNN_K = 20
 DISPLAY_ENSEMBLE_FIG = False
 USE_MAX = True
@@ -55,7 +55,7 @@ def find_subspace_anomalies(x_id, x_emb, dim_count, show_figs=False) :
         dim_count
     )
 
-    print('count', _count)
+    # print('count', _count)
     _dims = [int(_) for _ in (
         sorted(
             random.sample(
@@ -65,8 +65,8 @@ def find_subspace_anomalies(x_id, x_emb, dim_count, show_figs=False) :
     )]
 
     sample_data = x_emb[:, _dims]
-    print('Dimensions :', _dims)
-    print(sample_data.shape)
+    # print('Dimensions :', _dims)
+    # print(sample_data.shape)
 
     clf = LocalOutlierFactor(
         n_neighbors=KNN_K,
@@ -96,7 +96,7 @@ def find_subspace_anomalies(x_id, x_emb, dim_count, show_figs=False) :
         ax1.boxplot(X_scores)
         plt.show()
 
-    print(X_scores.shape)
+    # print(X_scores.shape)
 
     X_scores = np.reshape(X_scores,-1)
     x_id = list(np.reshape(x_id,-1))
@@ -115,13 +115,13 @@ def find_subspace_anomalies(x_id, x_emb, dim_count, show_figs=False) :
     }
 
     time_2 = time.time()
-    print('time elapsed (Seconds):', time_2 - time_1)
+    # print('time elapsed (Seconds):', time_2 - time_1)
 
     return result_dict
 
 
     #
-    # print('Cut off', cut_off)
+    # # print('Cut off', cut_off)
     # _candidates = []
     # for item in sorted_x:
     #     _candidates.append(item)
@@ -135,10 +135,10 @@ def anomaly_1( id_list, embed_list ):
     x_id = id_list
     x_emb = embed_list
 
-    print(x_emb.shape)
+    # print(x_emb.shape)
     dim_count = int(x_emb.shape[-1])
     num_subspace_samples = int(dim_count*1.5)
-    print('----')
+    # print('----')
 
     all_candidates = Parallel(
         n_jobs=num_subspace_samples
@@ -151,7 +151,7 @@ def anomaly_1( id_list, embed_list ):
 
     # LOF scores are normalized , so simply add them up
     all_keys = list(x_id)
-    # print(len(all_keys))
+    # # print(len(all_keys))
     num_subsp = len(all_candidates)
     score_dict = {}
 
@@ -182,9 +182,9 @@ def anomaly_1( id_list, embed_list ):
         plt.show()
 
     # cut_off = np.percentile(list(score_dict.values()), 0.10)
-    # print('Cut Off score :', cut_off)
+    # # print('Cut Off score :', cut_off)
     sorted_x = sorted(score_dict.items(), key=operator.itemgetter(1))
-    # print(len(sorted_x))
+    # # print(len(sorted_x))
 
     id_list = [_[0] for _ in sorted_x]
     scores = [_[1] for _ in sorted_x]
@@ -201,7 +201,7 @@ def anomaly_1( id_list, embed_list ):
     #     result_PId_list.append(k)
 
 
-    # print('Number of anomalies', len(result_PId_list))
+    # # print('Number of anomalies', len(result_PId_list))
     # with open(os.path.join(OP_DIR,'anomalies_1.pkl'),'wb') as fh:
     #     pickle.dump(result_PId_list,fh,pickle.HIGHEST_PROTOCOL)
 
