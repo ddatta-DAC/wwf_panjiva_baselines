@@ -10,7 +10,7 @@
   'num_epocs': 10
   'batch_size': 512
   'use_pretrained': False
-  'learning_rate':0.001
+  'learning_rate': 0.001
   'neg_samples' : 3
 'data_2':
   'embed_size': 8
