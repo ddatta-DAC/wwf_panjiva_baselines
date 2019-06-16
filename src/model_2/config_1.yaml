@@ -1,10 +1,10 @@
 'DATA_DIR': '../../Data'
-'_DIR': 'data_1'
-'OP_DIR': 'output'
-'SAVE_DIR': 'save_dir'
-'REFRESH_DATA': True
+'_DIR' : 'data_1'
+'OP_DIR' : 'output'
+'SAVE_DIR' : 'save_dir'
+'REFRESH_DATA' : True
 'MODEL_NAME': 'model_ape'
-'saved_model_file': False
+'saved_model_file' : False
 'data_1':
   'embed_size': 6
   'num_epocs': 10

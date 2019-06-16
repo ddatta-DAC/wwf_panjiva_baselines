@@ -312,7 +312,7 @@ class model:
 
                     # --------------------------- #
                     # apply  weight : element wise multiply
-                    w_joint_emb = tf.math.multiply(self.joint_emb_op, ep_x)
+                    w_joint_emb = tf.multiply(self.joint_emb_op, ep_x)
 
                     self.w_mean_emb_op = tf.reduce_mean(
                         w_joint_emb,

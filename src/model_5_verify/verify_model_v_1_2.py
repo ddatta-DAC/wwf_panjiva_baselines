@@ -90,7 +90,7 @@ def get_domain_dims():
 
 
 # ----------------------------------------- #
-# ---------		  Model Config	  --------- #
+# ---------               Model Config    --------- #
 # ----------------------------------------- #
 
 # embedding_dims = None
@@ -562,8 +562,9 @@ def run_experiment(
             for lof_k in exp_dict[_DIR]['lof_k']:
                 CONFIG[_DIR]['lof_K'] = lof_k
                 lof_1.KNN_K = CONFIG[_DIR]['lof_K']
-                all_res = Parallel(n_jobs=CONFIG['num_jobs'])(
-                    delayed(process)(
+                all_auc = []
+                for idx in range(max_count):
+                    _res, _ , _ = process(
                         idx,
                         CONFIG,
                         _DIR,
@@ -576,9 +577,7 @@ def run_experiment(
                         entity_prob_test,
                         eval_type)
 
-                    for idx in range(max_count)
-                )
-                all_auc = [_[0] for _ in all_res]
+                    all_auc.append(_res)
 
                 print('Mean AUC', np.mean(all_auc))
                 mean_auc = np.mean(all_auc)
