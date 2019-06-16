@@ -1,33 +1,29 @@
 'DATA_DIR': '../../Data'
-'_DIR' : 'data_1'
-'OP_DIR' : 'output'
-'SAVE_DIR' : 'save_dir'
-'REFRESH_DATA' : True
+'_DIR': 'data_1'
+'OP_DIR': 'output'
+'SAVE_DIR': 'save_dir'
+'REFRESH_DATA': True
 'MODEL_NAME': 'model_ape'
-'saved_model_file' :
-    - frozen_model_5_v18_6_1557867032.pb
-    - frozen_model_5_v18_6_1557867609.pb
-    - frozen_model_5_v18_6_1557868198.pb
-    - frozen_model_5_v18_6_1557868792.pb
-    - frozen_model_5_v18_6_1557869374.pb
-    - frozen_model_5_v18_6_1557869967.pb
-    - frozen_model_5_v18_6_1557870546.pb
-    - frozen_model_5_v18_6_1557871140.pb
-    - frozen_model_5_v18_6_1557871712.pb
-    - frozen_model_5_v18_6_1557872278.pb
+'saved_model_file': False
 'data_1':
-    'embed_size': 6
-    'num_epocs': 3
-    'batch_size': 256
+  'embed_size': 6
+  'num_epocs': 10
+  'batch_size': 512
+  'use_pretrained': False
+  'learning_rate':0.001
+  'neg_samples' : 3
 'data_2':
-    'embed_size': 8
-    'num_epocs': 5
-    'batch_size': 256
+  'embed_size': 8
+  'num_epocs': 10
+  'batch_size': 512
+  'use_pretrained': False
+  'learning_rate': 0.001
+  'neg_samples' : 3
 'data_5':
-    'embed_size': 4
-    'num_epocs' : 20
-    'batch_size': 64
+  'embed_size': 4
+  'num_epocs': 20
+  'batch_size': 64
 'dirs':
-    - 'data_1'
-    - 'data_2'
-    - 'data_5'
+  - 'data_1'
+  - 'data_2'
+  - 'data_5'
