@@ -24,8 +24,7 @@ from collections import OrderedDict
 import seaborn as sns
 import glob
 
-
-
+_TIME_IT = True
 
 sys.path.append('./..')
 sys.path.append('./../../.')
@@ -38,7 +37,6 @@ try:
     from src.model_2 import APE_tf_model_1
 except:
     from .src.model_2 import APE_tf_model_1
-
 
 cur_path = '/'.join(
     os.path.abspath(
@@ -65,70 +63,10 @@ def create_args():
         'None',
         "path to data")
 
-    tf.app.flags.DEFINE_float(
-        'learning_rate',
-        0.001,
-        'Initial learning rate.'
-    )
-
-    tf.app.flags.DEFINE_integer(
-        'batchsize',
-        1024,
-        'size of batch'
-    )
-
-    tf.app.flags.DEFINE_integer(
-        'op_dim',
-        6,
-        'size of embedding'
-    )
-
-    tf.app.flags.DEFINE_integer(
-        'num_epochs',
-        2,
-        'number of epochs for training'
-    )
-
-    tf.app.flags.DEFINE_integer(
-        'neg_samples',
-        3,
-        'number of neg samples for training'
-    )
-
     tf.app.flags.DEFINE_boolean(
         'show_loss_fig',
         False,
         'Display figure'
-    )
-
-    tf.app.flags.DEFINE_string(
-        'saved_model_file',
-        'model_ape_10_k_3_frozen.pb',
-        "path to data"
-    )
-
-    tf.app.flags.DEFINE_boolean(
-        'use_pretrained',
-        False,
-        "To train a new model or use pre trained model"
-    )
-
-    tf.app.flags.DEFINE_integer(
-        'run_case',
-        2,
-        'run case for getting embedding of the transactions'
-    )
-
-    tf.app.flags.DEFINE_integer(
-        'viz',
-        3,
-        'visualization'
-    )
-
-    tf.app.flags.DEFINE_boolean(
-        'score',
-        False,
-        'calculate scores'
     )
 
     return
@@ -159,12 +97,13 @@ def get_cur_path():
 
 # -------- Globals --------- #
 
-# ---------		  Model Config	  --------- #
+# -------- Model Config	  --------- #
 
 
 CONFIG_FILE = 'config_1.yaml'
 with open(CONFIG_FILE) as f:
     config = yaml.safe_load(f)
+
 
 def setup():
     global SAVE_DIR
@@ -200,10 +139,8 @@ def setup():
         os.mkdir(OP_DIR)
     MODEL_NAME = 'model_ape'
 
-
     domain_dims = get_domain_arity()
     cur_path = get_cur_path()
-
 
 
 # ----------------------------------------- #
@@ -238,15 +175,14 @@ def get_training_data(
         P_Aa = tmp.to_dict()
         for _z in range(domain_dims[d]):
             if _z not in P_Aa.keys():
-                P_Aa[_z] = math.pow(10,-8)
+                P_Aa[_z] = math.pow(10, -8)
         P_A[d] = P_Aa
         inp_dims[d] = domain_dims[d]
     # print('Input dimensions', inp_dims)
 
-    TRAIN_DATA_FILE_NAME = 'ape_v1_train_data_'+ str(neg_samples) + str(index) + '.pkl'
+    TRAIN_DATA_FILE_NAME = 'ape_v1_train_data_' + str(neg_samples) + str(index) + '.pkl'
     TRAIN_DATA_FILE = os.path.join(DATA_DIR, _DIR, TRAIN_DATA_FILE_NAME)
     print(TRAIN_DATA_FILE)
-
 
     if os.path.exists(TRAIN_DATA_FILE):
         with open(TRAIN_DATA_FILE, 'rb') as fh:
@@ -262,7 +198,7 @@ def get_training_data(
     count = 0
 
     for row in vals:
-        count +=1
+        count += 1
         val = row
         for nd in range(num_domains):
 
@@ -316,10 +252,12 @@ def get_training_data(
 
     return data, inp_dims
 
+
 # ----------------------------------------- #
 # This gets all the data
 # ----------------------------------------- #
 def get_data():
+    global _TIME_IT
     global DATA_FILE
     global _DIR
     global DATA_DIR
@@ -335,25 +273,33 @@ def get_data():
         _DIR,
         'test_x_*.pkl'
     )
-    print(_test_files)
-    test_files = glob.glob(_test_files)
+
+    DATA_Xid_FILE = os.path.join(DATA_DIR, _DIR, 'train_x_id.pkl')
+    with open(DATA_Xid_FILE, 'rb') as fh:
+        DATA_X_id = pickle.load(fh)
+
+    test_files = sorted(glob.glob(_test_files))
+
+    if _TIME_IT:
+        test_files = [test_files[0]]
+    print(test_files)
     test_x = []
     test_anom_id = []
     test_all_id = []
     for t in test_files:
+        print(t)
         with open(t, 'rb') as fh:
             data = pickle.load(fh)
             test_anom_id.append(data[0])
             test_all_id.append(data[1])
             test_x.append(data[2])
 
-    return DATA_X, test_anom_id, test_all_id, test_x
-
+    return DATA_X, DATA_X_id, test_anom_id, test_all_id, test_x
 
 
 # --------------------------- #
 def main(argv):
-
+    global _TIME_IT
     global _DIR
     global OP_DIR
     global SAVE_DIR
@@ -368,20 +314,19 @@ def main(argv):
     checkpoint_dir = os.path.join(SAVE_DIR)
     print(os.getcwd())
 
-
-    data_x, test_anom_id, test_all_id, test_x =  get_data()
+    data_x, data_x_id, test_anom_id, test_all_id, test_x = get_data()
     count_test_sets = len(test_x)
-
 
     test_result_r = []
     test_result_p = []
     res = None
+    start_time = time.time()
     for i in range(count_test_sets):
 
         train_data_x = np.vstack([data_x, test_x[i]])
         data, inp_dims = get_training_data(
             train_data_x,
-            FLAGS.neg_samples,
+            config[_DIR]['neg_samples'],
             index=i
         )
 
@@ -390,10 +335,10 @@ def main(argv):
         model_obj.set_model_params(
             num_entities=num_domains,
             inp_dims=inp_dims,
-            neg_samples=FLAGS.neg_samples,
+            neg_samples=config[_DIR]['neg_samples'],
             batch_size=config[_DIR]['batch_size'],
             num_epochs=config[_DIR]['num_epocs'],
-            lr= FLAGS.learning_rate,
+            lr=config[_DIR]['learning_rate'],
             chkpt_dir=checkpoint_dir
         )
 
@@ -402,21 +347,33 @@ def main(argv):
             emb_dims=[_emb_size],
             use_bias=[True, False]
         )
+        _use_pretrained = config[_DIR]['use_pretrained']
 
-        print(FLAGS.use_pretrained)
-        if FLAGS.use_pretrained is False:
+        if _use_pretrained is False:
             model_obj.build_model()
             model_obj.train_model(data)
 
-        _x = test_x[i]
-        _x = np.vstack([_x,data_x] )
+        '''
+        join the normal data + anomaly data
+        join the normal data id +  anomaly data id 
+        Maintain order
+        '''
+        _x = np.vstack([test_x[i], data_x])
+        _x_id = list(test_all_id[i])
+        _x_id.extend(data_x_id)
+
         res = model_obj.inference(_x)
-        all_ids = test_all_id[i]
+
+        # Known anomalies
         anomalies = test_anom_id[i]
 
         _id_score_dict = {
-            id: res for id, res in zip(all_ids, res)
+            id: res for id, res in zip(_x_id, res)
         }
+        '''
+        sort by ascending 
+        since lower likelihood means anomalous
+        '''
         tmp = sorted(
             _id_score_dict.items(),
             key=operator.itemgetter(1)
@@ -430,53 +387,44 @@ def main(argv):
             anomaly_id_list=anomalies
         )
 
-        print('--------------------------')
-
         from sklearn.metrics import auc
+
         _auc = auc(recall, precison)
         print('AUC', _auc)
-        plt.figure(figsize=[14, 8])
-        plt.plot(
-            recall,
-            precison,
-            color='blue', linewidth=1.75)
 
-        plt.xlabel('Recall', fontsize=15)
-        plt.ylabel('Precision', fontsize=15)
-        plt.title('Recall | AUC ' + str(_auc), fontsize=15)
-        f_name = 'precison-recall_1_test_' + str(i) + '.png'
-        f_path = os.path.join(OP_DIR, f_name)
+        print('--------------------------')
 
-        # plt.savefig(f_path)
-        test_result_r.append(recall)
-        test_result_p.append(precison)
-        plt.close()
+        '''
+            if _TIME_IT == False:
+
+            _auc = auc(recall, precison)
+            print('AUC', _auc)
+            plt.figure(figsize=[14, 8])
+            plt.plot(
+                recall,
+                precison,
+                color='blue', linewidth=1.75)
+
+            plt.xlabel('Recall', fontsize=15)
+            plt.ylabel('Precision', fontsize=15)
+            plt.title('Recall | AUC ' + str(_auc), fontsize=15)
+            f_name = 'precison-recall_1_test_' + str(i) + '.png'
+            f_path = os.path.join(OP_DIR, f_name)
+
+            # plt.savefig(f_path)
+            test_result_r.append(recall)
+            test_result_p.append(precison)
+            plt.close()
+        '''
 
         print('----------------------------')
 
-        # x, y = eval.performance_by_score(
-        #     sorted_id_score_dict,
-        #     anomalies)
-        #
-        # plt.figure(figsize=[14, 8])
-        # plt.plot(
-        #     x,
-        #     y,
-        #     color='red', linewidth=1.75)
-        # # plt.xlabel(' ', fontsize=15)
-        # plt.ylabel('Percentage of anomalies detected', fontsize=15)
-        # plt.title('Lowest % of scores', fontsize=15)
-        #
-        # f_name = 'score_1_test_' + str(i) + '.png'
-        # f_path = os.path.join(OP_DIR, f_name)
-        #
-        # plt.savefig(f_path)
-        # plt.close()
+    end_time = time.time()
+    avg_time = (end_time - start_time) / count_test_sets
 
+    all_auc = []
     plt.figure(figsize=[14, 8])
     j = 1
-    mean_auc = 0
-    all_auc = []
     for _x, _y in zip(test_result_r, test_result_p):
         plt.plot(
             _x,
@@ -487,51 +435,64 @@ def main(argv):
         j += 1
         _auc = auc(_x, _y)
         print(_auc)
-        mean_auc += _auc
         all_auc.append(_auc)
+
     mean_auc = np.mean(all_auc)
+    print('Mean AUC', mean_auc)
 
-    print('Mean ', mean_auc)
-    plt.xlabel('Recall', fontsize=15)
-    plt.ylabel('Precision', fontsize=15)
-    plt.title('Precision Recall Curve', fontsize=17)
-    plt.legend(loc='best')
-    plt.show()
-    plt.close()
+    print(" ======================== ")
 
-    plt.figure(figsize=[14, 8])
-    plt.title('Distribution of scores in Model 2', fontsize=17)
-    plt.ylabel('Scores', fontsize=15)
-    plt.xlabel('Samples', fontsize=15)
-    _y = list(sorted(res))
-    _x = list(range(len(_y)))
-    plt.plot(
-        _x,
-        _y,
-        linewidth=1.75
-    )
+    '''
+        plt.xlabel('Recall', fontsize=15)
+        plt.ylabel('Precision', fontsize=15)
+        plt.title('Precision Recall Curve', fontsize=17)
+        plt.legend(loc='best')
+        # plt.show()
+        plt.close()
+    
+    '''
 
-    # plt.show()
-    plt.close()
-    # save the results
+    '''
+        plt.figure(figsize=[14, 8])
+        plt.title('Distribution of scores in Model 2', fontsize=17)
+        plt.ylabel('Scores', fontsize=15)
+        plt.xlabel('Samples', fontsize=15)
+        _y = list(sorted(res))
+        _x = list(range(len(_y)))
+        plt.plot(
+            _x,
+            _y,
+            linewidth=1.75
+        )
+    
+        # plt.show()
+        plt.close()
+    
+    '''
+    # ------------------------------------
+    # Save the results
+    # ------------------------------------
     _dict = {
-        'mean_auc' : mean_auc,
-        'all_auc' : ';'.join([str(_) for _ in all_auc])
+        'mean_auc': mean_auc,
+        'all_auc': ';'.join([str(_) for _ in all_auc]),
+        'time': avg_time
     }
-    for k,v in config[_DIR]:
+
+    for k, v in config[_DIR]:
         _dict[k] = str(v)
 
-    _dict = { k:[v] for k,v in _dict.items()}
+    _dict = {k: [v] for k, v in _dict.items()}
     df = pd.DataFrame(_dict)
 
-    res_fname = 'ape_result'+ str(time.time()).split('.')[0]+'.csv'
+    res_fname = 'ape_result_v2' + str(time.time()).split('.')[0] + '.csv'
     df.to_csv(
-        os.path.join(OP_DIR,res_fname)
+        os.path.join(OP_DIR, res_fname)
     )
+    if _TIME_IT:
+        print('Time Taken :', avg_time)
+
 
 # ---------------------------- #
-
-
 if __name__ == "__main__":
     create_args()
     FLAGS.show_loss_fig = True
