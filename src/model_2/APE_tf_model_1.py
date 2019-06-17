@@ -170,7 +170,7 @@ class model_ape_1:
                 except:
                     init_val = tf.random.uniform([1], 0, 1)
                 self.c = tf.Variable (
-                    initial_value = init_val
+                    initial_value = init_val,
                     name = name
                 )
                 self.wb_names.append(prefix + name)
@@ -182,11 +182,16 @@ class model_ape_1:
             name = 'W_ij'
             prefix = self.model_scope_name + '/' + wb_scope_name + '/'
             if self.restore is False:
+                init_val = None
+                try:
+                    init_val = tf.random.uniform(
+                        [self.num_entities, self.num_entities],0,1 )
+                except:
+                    init_val = tf.random_uniform(
+                        [self.num_entities, self.num_entities], 0, 1)
+
                 self.W_ij = tf.Variable(
-                    initial_value=tf.random.uniform(
-                        [self.num_entities, self.num_entities],
-                        0,
-                        1),
+                   init_val,
                     name=name
                 )
                 self.wb_names.append(prefix + name)
