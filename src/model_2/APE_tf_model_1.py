@@ -85,10 +85,16 @@ class model_ape_1:
 
     # ------- Define weights ------ #
     def get_weight_variable(self, shape, name=None):
-        initial = tf.random.uniform(shape, -0.10, 0.10)
+        init_val = None
+        try:
+            init_val = tf.random_uniform(shape, -0.10, 0.10)
+        except:
+            init_val = tf.random.uniform(shape, -0.10, 0.10)
+
+        
         if name is not None:
             return tf.Variable(
-                initial,
+                init_val,
                 name=name
             )
         else:
@@ -158,9 +164,14 @@ class model_ape_1:
             name = 'c'
             prefix = self.model_scope_name + '/' + wb_scope_name + '/'
             if self.restore is False:
-                self.c = tf.Variable(
-                    initial_value=tf.random.uniform([1], 0, 1),
-                    name=name
+                init_val = None
+                try:
+                    init_val = tf.random_uniform([1], 0, 1)
+                except:
+                    init_val = tf.random.uniform([1], 0, 1)
+                self.c = tf.Variable (
+                    initial_value = init_val
+                    name = name
                 )
                 self.wb_names.append(prefix + name)
             else:
@@ -337,7 +348,7 @@ class model_ape_1:
             self.score = P_e
 
             # --------------------------------- #
-            # End of build	-> for restore mode
+            # End of build      -> for restore mode
             # --------------------------------- #
             if inference is True:
                 return
