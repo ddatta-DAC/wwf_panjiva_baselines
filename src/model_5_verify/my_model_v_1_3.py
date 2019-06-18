@@ -71,6 +71,8 @@ class model:
         self.save_loss_figure = save_loss_figure
         self.set_w_mean = True
         return
+
+
     def set_SerialID(self, test_SerialID):
         self.test_SerialID = test_SerialID
 
@@ -475,8 +477,7 @@ class model:
         Check_Save_Prev = False
 
         print('Num batches :', num_batches)
-        last_10_epochs_loss = []
-        last_10_graph_defs = []
+
 
         for e in range(self.num_epochs):
 
@@ -504,20 +505,6 @@ class model:
                     Check_Save_Prev = True
                     print('[ERROR] Loss is NaN !!!, breaking...')
                     break
-                # else:
-                #     last_10_epochs_loss.append(batch_loss)
-                #     last_10_epochs_loss = last_10_epochs_loss[-10:]
-
-                    # graph_def = tf.get_default_graph().as_graph_def()
-                    # frozen_graph_def = convert_variables_to_constants(
-                    #     self.sess,
-                    #     graph_def,
-                    #     self.wb_names
-                    # )
-                    # print(type(graph_def))
-                    # last_10_graph_defs.append(frozen_graph_def)
-                    # last_10_graph_defs = last_10_graph_defs[-10:]
-
 
             if Check_Save_Prev is True:
                 break
@@ -535,18 +522,7 @@ class model:
                 t = (t2 - t1) / 60
                 print('Epoch ', e + 1, 'Time elapsed in epoch : ', t, 'minutes')
 
-        # last_5_epochs_loss = last_10_epochs_loss[-5:]
-        # last_5_graph_defs = last_10_graph_defs[-5:]
-        # min_idx = np.argmin(last_5_epochs_loss)
 
-
-        # frozen_graph_def = last_5_graph_defs[min_idx]
-        # print(' > ', len(last_5_graph_defs) )
-        # with tf.gfile.GFile(self.frozen_file, "wb") as f:
-        #     f.write(frozen_graph_def.SerializeToString())
-
-
-        # print('Losses :', losses)
         if self.save_loss_fig or self.show_loss_figure:
             plt.figure()
             plt.title('Training Loss')
@@ -563,16 +539,6 @@ class model:
                 plt.show()
 
             plt.close()
-
-        # graph_def = tf.get_default_graph().as_graph_def()
-        # frozen_graph_def = convert_variables_to_constants(
-        #     self.sess,
-        #     graph_def,
-        #     self.wb_names
-        # )
-
-        # select the one with least loss
-
 
         return self.frozen_file
 

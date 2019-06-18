@@ -15,6 +15,7 @@ import argparse
 import sys
 from tensorflow.python.framework.graph_util import convert_variables_to_constants
 import time
+from pprint import pprint
 import inspect
 from collections import OrderedDict
 import matplotlib
@@ -177,7 +178,7 @@ def get_data():
         'test_x_*.pkl'
     )
 
-    test_files = glob.glob(_test_files)
+    test_files = sorted(glob.glob(_test_files))
     print(test_files)
     test_x = []
     test_anom_id = []
@@ -276,6 +277,7 @@ def process(
 ):
     model_obj = set_up_model(CONFIG, _DIR)
     _x = np.vstack([data_x, test_x[idx]])
+
     model_obj.set_SerialID(test_SerialID[idx])
     _use_pretrained = CONFIG[_DIR]['use_pretrained']
 
@@ -316,10 +318,10 @@ def process(
         if saved_file_path is not None:
             model_obj.set_pretrained_model_file(saved_file_path)
         else:
-            model_obj.train_model(data_x)
+            model_obj.train_model(_x)
 
     elif _use_pretrained is False:
-        model_obj.train_model(data_x)
+        model_obj.train_model(_x)
 
     _ep = entity_prob_test[idx]
     if CONFIG[_DIR]['w_mean']:
@@ -332,18 +334,18 @@ def process(
     _all_ids.extend(list(_test_all_id))
 
     anomalies = test_anom_id[idx]
+    print('Number of true anomalies', len(anomalies))
 
+    # ---------------------
     # USE LOF here
+    # ---------------------
+
     sorted_id_score_dict = lof_1.anomaly_1(
         id_list=_all_ids,
         embed_list=mean_embeddings
     )
 
-    _scored_dict_test = {}
-
-    for k1, v in sorted_id_score_dict.items():
-        if k1 in _test_all_id or k1 in _scored_dict_test:
-            _scored_dict_test[k1] = v
+    _scored_dict_test = OrderedDict(sorted_id_score_dict)
 
     if eval_type == 1:
         recall, precison = evaluation_v1.precision_recall_curve(
@@ -465,9 +467,12 @@ def main():
     data_x, test_anom_id, test_all_id, test_x, train_ids, entity_prob_train_x, entity_prob_test, test_SerialID = get_data()
 
     DOMAIN_DIMS = get_domain_dims()
-    print(data_x.shape)
-    print([_.shape for _ in test_x])
-    print([_.shape for _ in entity_prob_test])
+    print('Training data shape', data_x.shape)
+    print('Shape of  testing data :',[_.shape for _ in test_x])
+    print(
+        'Shape of entity probability',
+        [_.shape for _ in entity_prob_test]
+    )
 
     eval_type = CONFIG['eval_type']
 
@@ -604,8 +609,8 @@ exp_dict = {
 
     'data_5': {
         'exp_emb_size': [[8, 3], [8, 4], [8, 5], [8, 6], [8, 8]],
-        'lof_k': [10, 12, 15, 18, 20, 22, 24],
-        'alpha': [1, 0.1, 0.01, 0.001, 0.0001]
+        'lof_k': [5, 10, 12, 15, 18, 20, 22, 24],
+        'alpha': [1, 0.1, 0.01, 0.001]
     }
 
 }
@@ -615,7 +620,7 @@ parser.add_argument("-d", "--dir", nargs='?', default="None")
 args = parser.parse_args()
 
 if args.dir == 'None':
-    _dir = 'data_2'
+    _dir = 'data_5'
 else:
     _dir = args.dir
 

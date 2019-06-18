@@ -14,10 +14,10 @@
   'use_bias' : True
   'saved_model_file' : False
   'num_epochs' : 200
-  'op_dims' : 8,12
+  'op_dims' : 8,12,10
   'batchsize': 256
   'alpha' : 0.00025
-  'lof_K' : 20
+  'lof_K' : 50
   'w_mean' : True
   'log_file' : 'results_data_1_log.csv'
 'data_2':
@@ -28,7 +28,7 @@
   'use_bias' : True
   'saved_model_file' : False
   'num_epochs' : 250
-  'op_dims' : 8,10
+  'op_dims' : 8,6
   'batchsize': 512
   'alpha' : 0.01
   'lof_K' : 18
@@ -36,18 +36,18 @@
   'log_file' : 'results_data_2_log.csv'
 
 'data_5':
-  'learning_rate' : 0.00025
-  'use_pretrained' : True
+  'learning_rate' : 0.0025
+  'use_pretrained' : False
   'show_loss_figure' : False
   'save_loss_figure' : False
   'use_bias' : True
   'saved_model_file' : False
   'num_epochs' : 100
-  'op_dims' : 8,10
+  'op_dims' : 8,2
   'batchsize': 128
   'alpha' : 0.1
-  'lof_K' : 20
-  'w_mean' : True
+  'lof_K' : 5
+  'w_mean' : False
   'log_file' : 'results_data_5_log.csv'
 
 
